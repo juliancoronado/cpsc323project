@@ -9,7 +9,7 @@
 
 With the latest version of gcc and g++ installed in Linux, run the following:
 
-g++ main.cpp -o run
+$ g++ main.cpp -o run
 
 ### How to run code
 
