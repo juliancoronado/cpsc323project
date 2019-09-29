@@ -5,6 +5,13 @@
 2. Megan Peters
 3. Anthony Serrato
 
-### How to compile code / run
+### How to compile code
 
-tbd
+With the latest version of gcc and g++ installed in Linux, run the following:
+
+g++ main.cpp -o run
+
+### How to run code
+
+$ ./run
+
