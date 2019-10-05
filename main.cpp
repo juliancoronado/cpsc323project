@@ -13,33 +13,18 @@ const vector<string> OPERATOR_LIST = { "*", "+", "-", "=", "/", ">", "<", "%" };
 
 // protypes
 vector<string> parse(string);
-
-// this string will contain the input file as one long string
-string text;
+string readFile(string);
 
 int main() {
-	// temp variable will only be used in the main
-	string temp;
+	
+	// will contain the parsed tokens once file is read
 	vector<string> parsedList;
-	ifstream infile("sample1");
-	if (infile.is_open())
-	{
-		// runs while index is not at the end of the file
-		while (!infile.eof())
-		{
-			// this will remove all the newline characters and put text into one line
-			getline(infile, temp);
-			temp += " ";
-			text += temp;
-		}
-		infile.close();
-	} else {
-		// Displays error if file is unable to open
-		cout << "Error: Unable to open file" << endl;
-	}
+
+	string fileName = "sample1";
+	string inputfile = readFile(fileName);
 
 	// calls parse function on text to separate it into individual items
-	parsedList = parse(text);
+	parsedList = parse(inputfile);
 
 	// Sample output of what the parsedList contains
 	for (vector<string>::const_iterator i = parsedList.begin(); i != parsedList.end(); ++i) {
@@ -122,4 +107,29 @@ vector<string> parse(string s) {
 
 	// returns parseList
 	return parseList;
+}
+
+// read input from file function
+string readFile(string filename) {
+	string text, temp;
+	ifstream infile(filename);
+
+	if (infile.is_open())
+	{
+		// runs while index is not at the end of the file
+		while (!infile.eof())
+		{
+			// this will remove all the newline characters and put text into one line
+			getline(infile, temp);
+			temp += " ";
+			text += temp;
+		}
+		infile.close();
+	} else {
+		// Displays error if file is unable to open
+		cout << "Error: Unable to open file" << endl;
+	}
+
+	return text;
+
 }
