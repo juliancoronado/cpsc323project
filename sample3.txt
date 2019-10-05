@@ -1,0 +1,25 @@
+
+function convert_to_inches (length int)
+{	
+return length*12;
+}
+%%
+function convert_to_feet (length int)
+{
+	return length/12;
+}
+%%
+int length;
+string unit;
+get (length, unit);
+if (unit == feet)
+{
+	put(convert_to_inches(length));
+}
+otherwise
+$
+{
+	put(convert_to_feet(length));
+}
+fi
+%%	
