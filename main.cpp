@@ -4,27 +4,11 @@
 
 using namespace std;
 
-/*struct record
-{
-	string token;
-	string lexeme;
-};
-
-
-string lexer()
-{
-
-
-
-
-
-}*/
-
 string text;
 
 int main()
 {
-	//Read file character by character
+	// Temp variable will only be used in the main
 	string temp;
 	ifstream infile("sample1");
 	if (infile.is_open())
@@ -43,6 +27,7 @@ int main()
 		cout << "Error: Unable to open file" << endl;
 	}
 
+	// We'll get back to this later
 	/* //Now write results to file
 	ofstream outfile;
 	outfile.open("output1.txt");
