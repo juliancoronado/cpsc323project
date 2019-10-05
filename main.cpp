@@ -6,7 +6,7 @@
 using namespace std;
 
 // global constants
-const vector<string> STATE_NAMES = { "initial state", "keyword", "identifier", "separator", "operator", "real", "Error state" };
+const vector<string> STATE_NAMES = { "keyword", "identifier", "separator", "operator", "real", "integer", "Error state" };
 const vector<string> KEYWORD_LIST = { "int", "float", "bool", "if", "else", "then", "endif", "while", "whileend", "do", "doend", "for", "forend", "input", "output", "and", "or" , "function" };
 const vector<string> SEPARATOR_LIST = { "'", "(", ")", "[", "]", "{", "}", ",", ".", ":", ";", "!" };
 const vector<string> OPERATOR_LIST = { "*", "+", "-", "=", "/", ">", "<", "%" };
@@ -83,6 +83,26 @@ bool fsmReal(string value){
 			return true;
 		}
 	}
+}
+
+//lexer function
+int lexer(string token){
+	//initialize to error state
+	int token_state=6;
+	if (std::find(KEYWORD_LIST.begin(), KEYWORD_LIST.end(), token) != KEYWORD_LIST.end()) {
+		currentState = 0;
+	}else if (isValidID(token)) {
+		currentState = 1;
+	}else if (std::find(SEPARATOR_LIST.begin(), SEPARATOR_LIST.end(), token) != SEPARATOR_LIST.end()) {
+		currentState = 2;
+	}else if (std::find(OPERATOR_LIST.begin(), OPERATOR_LIST.end(), token) != OPERATOR_LIST.end()) {
+		currentState = 3;
+	}else if (isValidReal(token)) {
+		currentState = 4;
+	}else if (isValidInteger(token)){
+		currentState = 5;
+	}
+	return currentState;
 }
 
 // parse function
