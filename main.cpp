@@ -34,6 +34,53 @@ int main() {
 	return 0;
 }
 
+//fsm to check for identifier
+bool fsmIdentifier(string value){
+	if(isLetter(value.at(0))){
+		for(int i=0; i<value.length(); i++){
+			if(!isLetter(value.at(i)) && !isnum(value.at(i)) && (int)value.at(i) != 95){
+				//character is not a letter, digit, or number
+				return false;
+			}
+		}
+		return true;
+	}
+}
+
+//fsm to check for integer
+bool fsmInteger(string value){
+	for(int i=0; i<value.length(); i++){
+		if(!isNum(value.at(i))){
+			//contains a character that is not a digit
+			return false;
+		}
+	}
+	return true;
+}
+
+//fsm to check for real
+bool fsmReal(string value){
+	bool period=false;
+	int pcount=0;
+	if(isNum(value.at(0))){
+		for(int i=0; i<value.length(); i++){
+			//check if character is a period and is not the last character in the lexeme
+			if((int)value.at(i) == 46 && i!=(value.length()-1)){
+				period=true;
+				pcount++;
+			}
+			//else if: check if the character is a valid digit
+			else if(!isNum(value.at(i))){
+				return false;
+			}
+		}
+		//check if the lexeme has a period and that period only occurs once
+		if(period&&pcount=1){
+			return true;
+		}
+	}
+}
+
 // parse function
 vector<string> parse(string s) {
 
