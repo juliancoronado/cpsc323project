@@ -11,12 +11,16 @@ const vector<string> KEYWORD_LIST = { "int", "float", "bool", "if", "else", "the
 const vector<string> SEPARATOR_LIST = { "'", "(", ")", "[", "]", "{", "}", ",", ".", ":", ";", "!" };
 const vector<string> OPERATOR_LIST = { "*", "+", "-", "=", "/", ">", "<", "%" };
 
-// protypes
+// function protype
 vector<string> parse(string);
 string readFile(string);
+bool fsmIdentifier(string);
+bool fsmInteger(string);
+bool fsmReal(string);
+
 
 int main() {
-	
+
 	// will contain the parsed tokens once file is read
 	vector<string> parsedList;
 
@@ -36,9 +40,9 @@ int main() {
 
 //fsm to check for identifier
 bool fsmIdentifier(string value){
-	if(isLetter(value.at(0))){
+	if(isalpha(value.at(0))){
 		for(int i=0; i<value.length(); i++){
-			if(!isLetter(value.at(i)) && !isnum(value.at(i)) && (int)value.at(i) != 95){
+			if(!isalpha(value.at(i)) && !isdigit(value.at(i)) && (int)value.at(i) != 95){
 				//character is not a letter, digit, or number
 				return false;
 			}
@@ -50,7 +54,7 @@ bool fsmIdentifier(string value){
 //fsm to check for integer
 bool fsmInteger(string value){
 	for(int i=0; i<value.length(); i++){
-		if(!isNum(value.at(i))){
+		if(!isdigit(value.at(i))){
 			//contains a character that is not a digit
 			return false;
 		}
@@ -62,7 +66,7 @@ bool fsmInteger(string value){
 bool fsmReal(string value){
 	bool period=false;
 	int pcount=0;
-	if(isNum(value.at(0))){
+	if(isdigit(value.at(0))){
 		for(int i=0; i<value.length(); i++){
 			//check if character is a period and is not the last character in the lexeme
 			if((int)value.at(i) == 46 && i!=(value.length()-1)){
@@ -70,12 +74,12 @@ bool fsmReal(string value){
 				pcount++;
 			}
 			//else if: check if the character is a valid digit
-			else if(!isNum(value.at(i))){
+			else if(!isdigit(value.at(i))){
 				return false;
 			}
 		}
 		//check if the lexeme has a period and that period only occurs once
-		if(period&&pcount=1){
+		if(pcount=1 && period){
 			return true;
 		}
 	}
