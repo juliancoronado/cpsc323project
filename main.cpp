@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <algorithm>
 
 using namespace std;
 
@@ -26,16 +27,11 @@ int main() {
 	// will contain the parsed tokens once file is read
 	vector<string> parsedList;
 
-	string fileName = "sample1";
+	string fileName = "sample2";
 	string inputfile = readFile(fileName);
 
 	// calls parse function on text to separate it into individual items
 	parsedList = parse(inputfile);
-
-	// Sample output of what the parsedList contains
-	for (vector<string>::const_iterator i = parsedList.begin(); i != parsedList.end(); ++i) {
-		cout << *i << '\n';
-	}
 	
 	output(parsedList);
 
@@ -51,7 +47,7 @@ void output(vector<string> tList) {
 	ss << "--------------------\n";
 
 	for (int i = 0; i < tList.size(); i++) {
-		ss << STATE_NAMES[lexer(tList[i])] << "......" << tList[i] << '\n';
+		ss << STATE_NAMES[lexer(tList[i])] << " --> " << tList[i] << '\n';
 	}
 
 	cout << ss.str();
@@ -111,20 +107,20 @@ bool fsmReal(string value){
 int lexer(string token){
 	//initialize to error state
 	int token_state=6;
-	if (std::find(KEYWORD_LIST.begin(), KEYWORD_LIST.end(), token) != KEYWORD_LIST.end()) {
-		currentState = 0;
-	}else if (isValidID(token)) {
-		currentState = 1;
-	}else if (std::find(SEPARATOR_LIST.begin(), SEPARATOR_LIST.end(), token) != SEPARATOR_LIST.end()) {
-		currentState = 2;
-	}else if (std::find(OPERATOR_LIST.begin(), OPERATOR_LIST.end(), token) != OPERATOR_LIST.end()) {
-		currentState = 3;
-	}else if (isValidReal(token)) {
-		currentState = 4;
-	}else if (isValidInteger(token)){
-		currentState = 5;
+	if (find(KEYWORD_LIST.begin(), KEYWORD_LIST.end(), token) != KEYWORD_LIST.end()) {
+		token_state = 0;
+	}else if (fsmIdentifier(token)) {
+		token_state = 1;
+	}else if (find(SEPARATOR_LIST.begin(), SEPARATOR_LIST.end(), token) != SEPARATOR_LIST.end()) {
+		token_state = 2;
+	}else if (find(OPERATOR_LIST.begin(), OPERATOR_LIST.end(), token) != OPERATOR_LIST.end()) {
+		token_state = 3;
+	}else if (fsmReal(token)) {
+		token_state = 4;
+	}else if (fsmInteger(token)){
+		token_state = 5;
 	}
-	return currentState;
+	return token_state;
 }
 
 // parse function

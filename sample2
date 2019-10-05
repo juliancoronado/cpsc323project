@@ -1,6 +1,6 @@
-function total(price float, quantity int)
+function total (price float, quantity int)
 {
-	return price*quantity;
+	return price * quantity;
 }
 %%
 
