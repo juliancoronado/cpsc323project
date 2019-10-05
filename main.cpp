@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <sstream>
 
 using namespace std;
 
@@ -17,7 +18,8 @@ string readFile(string);
 bool fsmIdentifier(string);
 bool fsmInteger(string);
 bool fsmReal(string);
-
+void output(vector<string>);
+int lexer(string);
 
 int main() {
 
@@ -34,8 +36,28 @@ int main() {
 	for (vector<string>::const_iterator i = parsedList.begin(); i != parsedList.end(); ++i) {
 		cout << *i << '\n';
 	}
+	
+	output(parsedList);
 
 	return 0;
+}
+
+void output(vector<string> tList) {
+	ofstream outfile;
+	stringstream ss;
+	outfile.open("output.txt");
+
+	ss << "Token \t\t Lexemes\n";
+	ss << "--------------------\n";
+
+	for (int i = 0; i < tList.size(); i++) {
+		ss << STATE_NAMES[lexer(tList[i])] << "......" << tList[i] << '\n';
+	}
+
+	cout << ss.str();
+	outfile << ss.str();
+	outfile.close();
+
 }
 
 //fsm to check for identifier
