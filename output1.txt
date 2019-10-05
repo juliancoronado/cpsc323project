@@ -1,3 +1,0 @@
-Output:
- Token		Lexeme
-keyword				while
