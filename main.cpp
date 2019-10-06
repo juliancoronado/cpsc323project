@@ -23,11 +23,11 @@ void output(vector<string>);
 int lexer(string);
 
 int main() {
-
 	// will contain the parsed tokens once file is read
 	vector<string> parsedList;
+	
+	string fileName = "sample5";
 
-	string fileName = "sample2";
 	string inputfile = readFile(fileName);
 
 	// calls parse function on text to separate it into individual items
@@ -191,6 +191,13 @@ vector<string> parse(string s) {
 			}
 		}
 
+		//invalid character
+		if(atBegin.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_'()[]{ },.:;!*+-=/><%	 ") !=string::npos){
+			parseList.push_back(s.substr(0, 1));
+			s.erase(0, 1);
+			atBegin.assign(s, 0 , 1);
+		}
+
 	} while (!s.empty());
 	// runs while s is NOT empty, will stop once s IS empty
 
@@ -206,10 +213,10 @@ string readFile(string filename) {
 	if (infile.is_open())
 	{
 		// runs while index is not at the end of the file
-		while (!infile.eof())
+		while (getline(infile, temp))
 		{
 			// this will remove all the newline characters and put text into one line
-			getline(infile, temp);
+			
 			temp += " ";
 			text += temp;
 		}
