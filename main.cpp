@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <algorithm>
+#include <iomanip>
 
 using namespace std;
 
@@ -26,7 +27,7 @@ int main() {
 	// will contain the parsed tokens once file is read
 	vector<string> parsedList;
 	
-	string fileName = "sample5";
+	string fileName = "sample1";
 
 	string inputfile = readFile(fileName);
 
@@ -43,11 +44,11 @@ void output(vector<string> tList) {
 	stringstream ss;
 	outfile.open("output.txt");
 
-	ss << "Token \t\t Lexemes\n";
-	ss << "--------------------\n";
+	ss << "Token \t\t\t Lexemes\n";
+	ss << "-----------------------------------------\n";
 
 	for (int i = 0; i < tList.size(); i++) {
-		ss << STATE_NAMES[lexer(tList[i])] << " --> " << tList[i] << '\n';
+		ss << STATE_NAMES[lexer(tList[i])] << setw(24) << tList[i] << '\n';
 	}
 
 	cout << ss.str();
