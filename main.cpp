@@ -42,7 +42,7 @@ int main() {
 void output(vector<string> tList) {
 	ofstream outfile;
 	stringstream ss;
-	outfile.open("output.txt");
+	outfile.open("output1.txt");
 
 	ss << "Token \t\t\t Lexemes\n";
 	ss << "-----------------------------------------\n";
