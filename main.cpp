@@ -213,16 +213,18 @@ string readFile(string filename) {
 	string text, temp;
 	ifstream infile(filename);
 
-	if (infile.is_open())
-	{
+	if (infile.is_open()) {
+		
 		// runs while index is not at the end of the file
-		while (getline(infile, temp))
-		{
+
+		while (getline(infile, temp)) {
 			// this will remove all the newline characters and put text into one line
-			
+
 			temp += " ";
 			text += temp;
+			// cout << count(text.begin(), text.end(), ' ') << endl;
 		}
+
 		infile.close();
 	} else {
 		// Displays error if file is unable to open
