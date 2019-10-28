@@ -5,13 +5,11 @@
 2. Megan Peters
 3. Anthony Serrato
 
-### How to compile code
+### How to run code
 
 With the latest version of gcc and g++ installed in Linux, run the following:
 
-$ g++ main.cpp -o run
+$ sh run.sh
 
-### How to run code
-
-$ ./run
+(The file run.sh contains all the commands that compile the files and execute them.)
 
