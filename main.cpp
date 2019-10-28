@@ -26,8 +26,10 @@ int lexer(string);
 int main() {
 	// will contain the parsed tokens once file is read
 	vector<string> parsedList;
-	
-	string fileName = "sample1";
+	string fileName;
+
+	cout << "Enter the file name: ";
+	cin >> fileName;
 
 	string inputfile = readFile(fileName);
 
@@ -42,7 +44,7 @@ int main() {
 void output(vector<string> tList) {
 	ofstream outfile;
 	stringstream ss;
-	outfile.open("output1.txt");
+	outfile.open("output.txt");
 
 	ss << "Token \t\t\t Lexemes\n";
 	ss << "-----------------------------------------\n";
