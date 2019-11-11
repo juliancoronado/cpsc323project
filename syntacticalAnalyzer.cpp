@@ -1,12 +1,14 @@
 #include <iostream>
+#include <stack>
 using namespace std;
 
 class syntacticalAnalyzer{
 public:
 	enum State {Statement, Assign, Expression, Factor, Term_Prime};
 	State cstate;
+	stack <string> tokenstack;
 	syntacticalAnalyzer(){
-		cstate= Statement;
+		cstate=Statement;
 	}
 
 	string parse(string token, string lexeme){
@@ -14,7 +16,11 @@ public:
 			return r15(token, lexeme);
 		}if(cstate==Expression){
 			return r25(token, lexeme);
-		}if(cstate==Term_Prime){
+		}
+		if(cstate==Assign){
+		 	return r17(token, lexeme);
+		}
+		if(cstate==Term_Prime){
 			return r26P(token, lexeme);
 		}else{
 			return "";
@@ -118,11 +124,24 @@ private:
 	//Assign
 	//<Assign> -> <Identifier> = <Expression>
 	string r17(string token, string lexeme){
-		string s;
-		s+="<Assign>";
-		s+="\n\t<Assign>-> <Identifier> = <Expression>\n";
-		cstate=Expression;
-		return s; 
+		cstate=Assign;
+		if(tokenstack.size()==0 && token=="identifier"){
+			tokenstack.push(token);
+			string s;
+			s+="<Assign>";
+			s+="\n\t<Assign>-> <Identifier> = <Expression>\n";
+			return s; 
+		}
+		if(token=="operator"&&lexeme=="="){
+			tokenstack.push(lexeme);
+			return "";
+		}if(tokenstack.top()=="="){
+			tokenstack.push(token);
+			return r25(token,lexeme);
+		}else{
+			return "";
+		}
+		
 	}
 
 	//rule 18
@@ -165,13 +184,17 @@ private:
 	//<Expression> -> <Term> <Expression Prime>
 	//<Expression Prime> -> + <Term> <Expression> | - <Term> <Expression> | epsilon
 	string r25(string token, string lexeme){
-		if(token=="operator"){
-			return "";
-		}
+		cstate=Expression;
 		string s;
 		s+= "\t<Expression>-><Term><Expression Prime>\n";
 		s+= r26(token, lexeme);
 		return s;
+	}
+
+	//Expression Prime
+	//<Expression Prime> -> + <Term> <Expression> | - <Term> <Expression> | epsilon
+	string r25P(string token, string lexeme){
+		return "";
 	}
 
 	//rule 26
@@ -217,6 +240,8 @@ private:
 	string r28(string token, string lexeme){
 		if(token=="identifier"){
 			return "<Identifier>\n";
+		}if(token=="integer"){
+			return "<Integer>\n";
 		}
 	}
 
