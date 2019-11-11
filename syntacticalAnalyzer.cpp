@@ -132,6 +132,14 @@ private:
 			s+="->";
 			s+=r17(token, lexeme);
 
+		}  else if (token == "keyword" && lexeme == "if") {
+			// Rule 18 (if)
+			s += r18(token, lexeme);
+		} else if (token == "keyword" && lexeme == "return") {
+			// Rule 19 (return)
+			s += r19(token, lexeme);
+		} else if (token == "") {
+			// to do
 		}
 		else{
 			s+="\n";
