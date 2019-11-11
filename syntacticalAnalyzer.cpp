@@ -3,7 +3,7 @@ using namespace std;
 
 class syntacticalAnalyzer{
 public:
-	enum State {Statement, Assign, Expression};
+	enum State {Statement, Assign, Expression, Factor, Term_Prime};
 	State cstate;
 	syntacticalAnalyzer(){
 		cstate= Statement;
@@ -14,6 +14,8 @@ public:
 			return r15(token, lexeme);
 		}if(cstate==Expression){
 			return r25(token, lexeme);
+		}if(cstate==Term_Prime){
+			return r26P(token, lexeme);
 		}else{
 			return "";
 		}
@@ -114,11 +116,11 @@ private:
 
 	//rule 17
 	//Assign
-	//<Assign> -> <Identifier> = <Expression> ;
+	//<Assign> -> <Identifier> = <Expression>
 	string r17(string token, string lexeme){
 		string s;
 		s+="<Assign>";
-		s+="\n\t<Assign>-> <Identifier> = <Expression>;\n";
+		s+="\n\t<Assign>-> <Identifier> = <Expression>\n";
 		cstate=Expression;
 		return s; 
 	}
@@ -167,21 +169,55 @@ private:
 			return "";
 		}
 		string s;
+		s+= "\t<Expression>-><Term><Expression Prime>\n";
+		s+= r26(token, lexeme);
+		return s;
 	}
 
 	//rule 26
+	//Term
+	//<Term>-> <Factor> <Term Prime>
+	//<Term Prime> -> * <Factor> <Term> | / <Factor> <Term> | epsilon
 	string r26(string token, string lexeme){
-		return "";
+		string s;
+		s+="\t<Term>-> <Factor> <Term Prime>\n";
+		s+= r27(token,lexeme);
+		cstate = Term_Prime;
+		return s;
+	}
+
+	//Term Prime
+	//<Term Prime> -> * <Factor> <Term> | / <Factor> <Term> | epsilon
+	string r26P(string token, string lexeme){
+		string s;
+		s+= "\t<Term Prime>->";
+		if(lexeme!="*"&&lexeme!="/"){
+			s+="epsilon\n";
+		}
+		return s;
 	}
 
 	//rule 27
+	//Factor
+	//Factor -> -<Primary> | <Primary>
 	string r27(string token, string lexeme){
-		return "";
+		if(lexeme=="-"){
+			return "";
+		}
+		cstate = Factor;
+		string s;
+		s+= "\t<Factor>->";
+		s+= r28(token, lexeme);
+		return s;
 	}
 
 	//rule 28
+	//Primary
+	//Primary -> <Identifier> | <Integer> | <Identifier> (<IDs>)|(<Expression>)|<Real>|true|false
 	string r28(string token, string lexeme){
-		return "";
+		if(token=="identifier"){
+			return "<Identifier>\n";
+		}
 	}
 
 	//rule 29

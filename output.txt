@@ -2,10 +2,15 @@ Token 			 Lexemes
 -----------------------------------------
 identifier                       a
 	<Statement>-><Assign>
-	<Assign>-> <Identifier> = <Expression>;
+	<Assign>-> <Identifier> = <Expression>
 operator                       =
 identifier                       b
-boperator                       +
+	<Expression>-><Term><Expression Prime>
+	<Term>-> <Factor> <Term Prime>
+	<Factor>-><Identifier>
+operator                       +
+	<Term Prime>->epsilon
 identifier                       c
-cseparator                       ;
-;
+	<Term Prime>->epsilon
+separator                       ;
+	<Term Prime>->epsilon
