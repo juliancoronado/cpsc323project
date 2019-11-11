@@ -1,2 +1,11 @@
 Token 			 Lexemes
 -----------------------------------------
+identifier                       a
+	<Statement>-><Assign>
+	<Assign>-> <Identifier> = <Expression>;
+operator                       =
+identifier                       b
+boperator                       +
+identifier                       c
+cseparator                       ;
+;

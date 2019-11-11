@@ -3,10 +3,23 @@ using namespace std;
 
 class syntacticalAnalyzer{
 public:
+	enum State {Statement, Assign, Expression};
+	State cstate;
 	syntacticalAnalyzer(){
-		
+		cstate= Statement;
 	}
 
+	string parse(string token, string lexeme){
+		if(cstate==Statement){
+			return r15(token, lexeme);
+		}if(cstate==Expression){
+			return r25(token, lexeme);
+		}else{
+			return "";
+		}
+	}
+
+private:
 	//rule 1
 	string r1(string token, string lexeme){
 		return "";
@@ -78,8 +91,20 @@ public:
 	}
 
 	//rule 15
+	//Statement
+	//<Statement> -> <Compound> | <Assign> | <If> | <Return> | <Print> | <Scan> | <While>
 	string r15(string token, string lexeme){
-		return "";
+		string s;
+		s+="\t<Statement>";
+		if(token=="identifier"){
+			s+="->";
+			s+=r17(token, lexeme);
+
+		}
+		else{
+			s+="\n";
+		}
+		return s;
 	}
 
 	//rule 16
@@ -88,8 +113,14 @@ public:
 	}
 
 	//rule 17
+	//Assign
+	//<Assign> -> <Identifier> = <Expression> ;
 	string r17(string token, string lexeme){
-		return "";
+		string s;
+		s+="<Assign>";
+		s+="\n\t<Assign>-> <Identifier> = <Expression>;\n";
+		cstate=Expression;
+		return s; 
 	}
 
 	//rule 18
@@ -128,8 +159,14 @@ public:
 	}
 
 	//rule 25
+	//Expression
+	//<Expression> -> <Term> <Expression Prime>
+	//<Expression Prime> -> + <Term> <Expression> | - <Term> <Expression> | epsilon
 	string r25(string token, string lexeme){
-		return "";
+		if(token=="operator"){
+			return "";
+		}
+		string s;
 	}
 
 	//rule 26

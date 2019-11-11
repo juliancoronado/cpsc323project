@@ -40,8 +40,6 @@ int main() {
 	
 	output(parsedList);
 
-	cout<< sa.r15("crap", "crap");
-
 	return 0;
 }
 
@@ -55,6 +53,8 @@ void output(vector<string> tList) {
 
 	for (int i = 0; i < tList.size(); i++) {
 		ss << STATE_NAMES[lexer(tList[i])] << setw(24) << tList[i] << '\n';
+		//pass token and lexeme to syntactical analyzer
+		ss<<sa.parse(STATE_NAMES[lexer(tList[i])], tList[i]);
 	}
 
 	cout << ss.str();
