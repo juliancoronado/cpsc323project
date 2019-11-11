@@ -5,6 +5,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iomanip>
+#include "syntacticalAnalyzer.cpp"
 
 using namespace std;
 
@@ -13,6 +14,7 @@ const vector<string> STATE_NAMES = { "keyword", "identifier", "separator", "oper
 const vector<string> KEYWORD_LIST = { "int", "float", "bool", "if", "else", "then", "endif", "while", "whileend", "do", "doend", "for", "forend", "input", "output", "and", "or" , "function" };
 const vector<string> SEPARATOR_LIST = { "'", "(", ")", "[", "]", "{", "}", ",", ".", ":", ";", "!" };
 const vector<string> OPERATOR_LIST = { "*", "+", "-", "=", "/", ">", "<", "%" };
+syntacticalAnalyzer sa;
 
 // function protype
 vector<string> parse(string);
@@ -37,6 +39,8 @@ int main() {
 	parsedList = parse(inputfile);
 	
 	output(parsedList);
+
+	cout<< sa.r15("crap", "crap");
 
 	return 0;
 }
@@ -195,7 +199,7 @@ vector<string> parse(string s) {
 		}
 
 		//invalid character
-		if(atBegin.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_'()[]{ },.:;!*+-=/><%	 ") !=string::npos){
+		if(atBegin.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890'()[]{ },.:;!*+-=/><%	 ") !=string::npos){
 			parseList.push_back(s.substr(0, 1));
 			s.erase(0, 1);
 			atBegin.assign(s, 0 , 1);
