@@ -9,8 +9,5 @@ identifier                       b
 	<Term>-> <Factor> <Term Prime>
 	<Factor>-><Identifier>
 operator                       +
-	<Term Prime>->epsilon
 identifier                       c
-	<Term Prime>->epsilon
 separator                       ;
-	<Term Prime>->epsilon

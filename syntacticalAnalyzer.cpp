@@ -4,7 +4,7 @@ using namespace std;
 
 class syntacticalAnalyzer{
 public:
-	enum State {Statement, Assign, Expression, Factor, Term_Prime};
+	enum State {Statement, Assign, Expression, Factor,Term,Term_Prime};
 	stack <State> cstate;
 	stack <string> tokenstack;
 
@@ -23,6 +23,7 @@ public:
 	//default constructor set to Statement
 	syntacticalAnalyzer(){
 		cstate.push(Statement);
+		tokenstack.push("null");
 	}
 
 	string parse(string token, string lexeme){
@@ -159,8 +160,7 @@ private:
 		if(cstate.top()!=Assign){
 			cstate.push(Assign);
 		}
-		if(tokenstack.size()==0 && token=="identifier"){
-			tokenstack.push(token);
+		if(tokenstack.top()!="operator" && token=="identifier"){
 			string s;
 			s+="<Assign>";
 			s+="\n\t<Assign>-> <Identifier> = <Expression>\n";
@@ -219,10 +219,13 @@ private:
 	//<Expression> -> <Term> <Expression Prime>
 	//<Expression Prime> -> + <Term> <Expression> | - <Term> <Expression> | epsilon
 	string r25(string token, string lexeme){
-		cstate.push(Expression);
+		if(cstate.top()!=Expression){
+			cstate.push(Expression);
+		}
 		string s;
 		s+= "\t<Expression>-><Term><Expression Prime>\n";
 		s+= r26(token, lexeme);
+		cstate.pop();
 		return s;
 	}
 
@@ -237,10 +240,10 @@ private:
 	//<Term>-> <Factor> <Term Prime>
 	//<Term Prime> -> * <Factor> <Term> | / <Factor> <Term> | epsilon
 	string r26(string token, string lexeme){
+		cstate.push(Term);
 		string s;
 		s+="\t<Term>-> <Factor> <Term Prime>\n";
 		s+= r27(token,lexeme);
-		cstate.push(Term_Prime);
 		return s;
 	}
 
@@ -259,10 +262,10 @@ private:
 	//Factor
 	//Factor -> -<Primary> | <Primary>
 	string r27(string token, string lexeme){
+		cstate.push(Factor);
 		if(lexeme=="-"){
 			return "";
 		}
-		cstate.push(Factor);
 		string s;
 		s+= "\t<Factor>->";
 		s+= r28(token, lexeme);
