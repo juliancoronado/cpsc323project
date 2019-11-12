@@ -4,8 +4,10 @@ using namespace std;
 
 class syntacticalAnalyzer{
 public:
-	enum State {Statement, Assign, Expression, Factor,Term,Term_Prime};
+	enum State {Statement, Assign, Expression, Factor,Term,Term_Prime, Expression_Prime};
+	//track current state of parser
 	stack <State> cstate;
+	//track of all tokens that have been passed to syntax analyzer
 	stack <string> tokenstack;
 
 
@@ -28,7 +30,6 @@ public:
 
 	string parse(string token, string lexeme){
 		string s;
-		showstack(cstate);
 		if(cstate.top()==Statement){
 			s = r15(token, lexeme);
 			tokenstack.push(token);
@@ -47,7 +48,16 @@ public:
 			s = r26P(token, lexeme);
 			tokenstack.push(token);
 			return s;
-		}else{
+		}if(cstate.top()==Term){
+			s = r26(token, lexeme);
+			tokenstack.push(token);
+			return s;
+		}if(cstate.top()==Expression_Prime){
+			s = r25P(token, lexeme);
+			tokenstack.push(token);
+			return s;
+		}
+		else{
 			return "";
 		}
 	}
@@ -91,8 +101,8 @@ private:
 	//rule 8
 	//<Qualifier> -> int | boolean | real
 	string r8(string token, string lexeme) {
-	string s;
-	s += "\t<Qualifier> ->"
+		string s;
+		s += "\t<Qualifier> ->";
 		if (lexeme == "int") {
 			s += "int\n";
 		}
@@ -102,7 +112,7 @@ private:
 		else {
 		s += "real\n";
 		}
-	return s;
+		return s;
 	}
 
 	//rule 9
@@ -231,20 +241,41 @@ private:
 	//<Expression> -> <Term> <Expression Prime>
 	//<Expression Prime> -> + <Term> <Expression> | - <Term> <Expression> | epsilon
 	string r25(string token, string lexeme){
+		string s;
 		if(cstate.top()!=Expression){
 			cstate.push(Expression);
+		}if(token!="operator"&&token!="separator"){
+			s+= "\t<Expression>-><Term><Expression Prime>\n";
+			s+= r26(token, lexeme);
+			return s;
+		}else{
+			cstate.pop();
+			s+= r25P(token,lexeme);
+			return s;
 		}
-		string s;
-		s+= "\t<Expression>-><Term><Expression Prime>\n";
-		s+= r26(token, lexeme);
-		cstate.pop();
-		return s;
+		
 	}
 
 	//Expression Prime
 	//<Expression Prime> -> + <Term> <Expression> | - <Term> <Expression> | epsilon
 	string r25P(string token, string lexeme){
-		return "";
+		string s;
+		if(cstate.top()!=Expression_Prime){
+			cstate.push(Expression_Prime);
+			s+= "\t<Expression Prime>->";
+		}
+		if(lexeme=="+"){
+			s+="+<Term><Expression_Prime>\n";
+		}if(lexeme=="-"){
+			s+="-<Term><Expression_Prime>\n";
+		}if(token=="identifier"){
+			s+= r26(token, lexeme);
+		}if(token=="separator"){
+			cstate.pop();
+			s+="epsilon\n";
+			s+= r17(token,lexeme);
+		}
+		return s;
 	}
 
 	//rule 26
@@ -252,11 +283,17 @@ private:
 	//<Term>-> <Factor> <Term Prime>
 	//<Term Prime> -> * <Factor> <Term> | / <Factor> <Term> | epsilon
 	string r26(string token, string lexeme){
-		cstate.push(Term);
-		string s;
-		s+="\t<Term>-> <Factor> <Term Prime>\n";
-		s+= r27(token,lexeme);
-		return s;
+		if(cstate.top()!=Term){
+			cstate.push(Term);
+		}if(token!="operator"&&token!="separator"){
+			string s;
+			s+="\t<Term>-> <Factor> <Term Prime>\n";
+			s+= r27(token,lexeme);
+			return s;
+		}else{
+			cstate.pop();
+			return r26P(token, lexeme);
+		}
 	}
 
 	//Term Prime
@@ -265,7 +302,9 @@ private:
 		string s;
 		s+= "\t<Term Prime>->";
 		if(lexeme!="*"&&lexeme!="/"){
+			cstate.pop();
 			s+="epsilon\n";
+			s+= r25(token, lexeme);
 		}
 		return s;
 	}
@@ -274,12 +313,15 @@ private:
 	//Factor
 	//Factor -> -<Primary> | <Primary>
 	string r27(string token, string lexeme){
-		cstate.push(Factor);
+		if(cstate.top()!=Factor){
+			cstate.push(Factor);
+		}
 		if(lexeme=="-"){
 			return "";
 		}
 		string s;
 		s+= "\t<Factor>->";
+		cstate.pop();
 		s+= r28(token, lexeme);
 		return s;
 	}
