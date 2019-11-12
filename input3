@@ -1,17 +1,1 @@
-
-function total (price float, quantity int)
-{
-	return price * quantity;
-}
-%%
-
-float price, total;
-int quantity;
-
-get (price, quantity);
-while (quantity > 0)
-{
-	put (total(price, quantity));
-}
-
-%%
+put(foo);

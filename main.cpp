@@ -11,7 +11,7 @@ using namespace std;
 
 // global constants
 const vector<string> STATE_NAMES = { "keyword", "identifier", "separator", "operator", "real", "integer", "Error state" };
-const vector<string> KEYWORD_LIST = { "int", "float", "bool", "if", "else", "then", "endif", "while", "whileend", "do", "doend", "for", "forend", "input", "output", "and", "or" , "function" };
+const vector<string> KEYWORD_LIST = { "int", "float", "bool", "if", "else", "then","get", "endif", "while", "whileend", "do", "doend", "for", "forend", "input", "output", "and", "or" , "function" };
 const vector<string> SEPARATOR_LIST = { "'", "(", ")", "[", "]", "{", "}", ",", ".", ":", ";", "!" };
 const vector<string> OPERATOR_LIST = { "*", "+", "-", "=", "/", ">", "<", "%" };
 syntacticalAnalyzer sa;

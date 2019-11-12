@@ -4,7 +4,8 @@ using namespace std;
 
 class syntacticalAnalyzer{
 public:
-	enum State {Statement, Assign, Expression, Factor,Term,Term_Prime, Expression_Prime};
+	enum State {Statement, Assign, Expression, Factor,Term,Term_Prime, Expression_Prime, Scan, IDs, Print
+	};
 	//track current state of parser
 	stack <State> cstate;
 	//track of all tokens that have been passed to syntax analyzer
@@ -54,6 +55,14 @@ public:
 			return s;
 		}if(cstate.top()==Expression_Prime){
 			s = r25P(token, lexeme);
+			tokenstack.push(token);
+			return s;
+		}if(cstate.top()==Scan){
+			s = r21(token, lexeme);
+			tokenstack.push(token);
+			return s;
+		}if(cstate.top()==IDs){
+			s = r13(token, lexeme);
 			tokenstack.push(token);
 			return s;
 		}
@@ -136,8 +145,22 @@ private:
 	}
 
 	//rule 13
+	//IDs
+	//IDs-> <Identifier> | <Identifier>, <IDs>
 	string r13(string token, string lexeme){
-		return "";
+		string s;
+		if(cstate.top()!=IDs){
+			cstate.push(IDs);
+			s+= "\t<IDs>->";
+		}
+		if(token=="identifier"){
+			cstate.pop();
+			s+="<Identifier>\n";
+		}if(token=="separator"&&lexeme==","){
+			cstate.pop();
+			s+=",\n";
+		}
+		return s;
 	}
 
 	//rule 14
@@ -151,7 +174,11 @@ private:
 	string r15(string token, string lexeme){
 		string s;
 		s+="\t<Statement>";
-		if(token=="identifier"){
+		//<Scan>
+		if(token=="keyword"&&lexeme=="get"){
+			s += "->";
+			s += r21(token, lexeme);
+		}else if(token=="identifier"){
 			s+="->";
 			s+=r17(token, lexeme);
 
@@ -211,14 +238,43 @@ private:
 		return "";
 	}
 
-	//rule 20
+	//rule 20 *Julian*
+	// Print
+	// <Print> -> put( <Expression> );
 	string r20(string token, string lexeme){
-		return "";
+		cstate.push(Print);
+		string s;
+		s += "<Print> -> put(" + r25(token, lexeme) + ");";
+		return s;
 	}
 
+
 	//rule 21
+	//<Scan> -> get ( <IDs> );
 	string r21(string token, string lexeme){
-		return "";
+		string s;
+		if(cstate.top()!=Scan){
+			cstate.push(Scan);
+			s+= "<Scan>\n";
+			s+= "\t<Scan>->get(<IDs>);\n";
+		}
+		if(token=="keyword" && lexeme=="get"){
+			s+="";
+		}
+		if(token=="separator"&&lexeme=="("){
+			s+="";
+		}
+		if(token=="identifier"||token=="separator"&&lexeme==","){
+			s+= r13(token,lexeme);
+		}
+		if(token=="separator"&&lexeme==")"){
+			s+="";
+		}
+		if(token=="separator"&&lexeme==";"){
+			s+="\n";
+			cstate.pop();
+		}
+		return s;
 	}
 
 	//rule 22
