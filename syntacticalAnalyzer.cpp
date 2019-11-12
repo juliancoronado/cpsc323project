@@ -89,8 +89,20 @@ private:
 	}
 
 	//rule 8
-	string r8(string token, string lexeme){
-		return "";
+	//<Qualifier> -> int | boolean | real
+	string r8(string token, string lexeme) {
+	string s;
+	s += "\t<Qualifier> ->"
+		if (lexeme == "int") {
+			s += "int\n";
+		}
+		else if (lexeme == "bool") {
+			s += "boolean\n";
+		}
+		else {
+		s += "real\n";
+		}
+	return s;
 	}
 
 	//rule 9
