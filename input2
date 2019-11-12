@@ -1,2 +1,4 @@
 get (price, quantity);
 a=b+c;
+a=x+y+c;
+x=a*c;

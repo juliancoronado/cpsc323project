@@ -4,7 +4,7 @@ using namespace std;
 
 class syntacticalAnalyzer{
 public:
-	enum State {Statement, Assign, Expression, Factor,Term,Term_Prime, Expression_Prime, Scan, IDs, Print
+	enum State {Statement, Assign, Expression, Factor,Term,Term_Prime, Expression_Prime, Scan, IDs, Print, While, Condition, Relop, Empty, If, Return
 	};
 	//track current state of parser
 	stack <State> cstate;
@@ -228,14 +228,40 @@ private:
 		
 	}
 
-	//rule 18
+	//rule 18 *Julian*
+	// If
+	// <If> -> if ( <Condition> ) <Statement> fi |
+	//	if ( <Condition> ) <Statement> otherwise <Statement> fi
 	string r18(string token, string lexeme){
-		return "";
+		cstate.push(If);
+		string s;
+		// TODO needs some sort of check here bc idk how to check
+		// for which one to add to s
+		if (token == "keyword" && lexeme =="if") {
+			s += "if (" + r23(token, lexeme) + ") " + r15(token, lexeme) + " fi";
+		} else {
+			s += "if (" + r23(token, lexeme) + ") " + r15(token, lexeme);
+			s += " otherwise " + r15(token, lexeme) + " fi";
+		}
+		return s;
 	}
 
-	//rule 19
+	//rule 19 *Julian*
+	// Return
+	// <Return> -> return; | return <Expression>;
 	string r19(string token, string lexeme){
-		return "";
+		cstate.push(Return);
+		string s;
+		s += "<Return>-> ";
+		// idk if this is right, but it checks if the return string
+		// has more chars than just "return;" indicating that an expression
+		// follows the return statement, or could we just put <Expression>?
+		if (lexeme.size() > 7) {
+			s += "return" + r25(token, lexeme) + ";";
+		} else {
+			s+= "return;";
+		}
+		return s;
 	}
 
 	//rule 20 *Julian*
@@ -277,20 +303,52 @@ private:
 		return s;
 	}
 
-	//rule 22
+	//rule 22 *Julian*
+	// While
+	// <While> -> while ( <Condition> ) <Statement>
 	string r22(string token, string lexeme){
-		return "";
+		cstate.push(While);
+		string s;
+		s += "<While>->(" + r23(token, lexeme) + ")<Statement>";
+		return s;
 	}
 
-	//rule 23
+
+	//rule 23 *Julian*
+	// Condition
+	// <Condition> -> <Expression> <Relop> <Expression>
 	string r23(string token, string lexeme){
-		return "";
+		cstate.push(Condition);
+		string s;
+		s += "<Condition>->" + r25(token, lexeme) + "<Relop>" + r25(token,lexeme);
+		return s;
 	}
 
-	//rule 24
+	//rule 24 *Julian*
+	// Relop
+	// <Relop> -> == | /= | > | < | => | <=
 	string r24(string token, string lexeme){
-		return "";
+		cstate.push(Relop);
+		string s;
+		// ----- maybe these can all be return statements??? ------
+		if (lexeme == "==") {
+			s += "==";
+		} else if (lexeme == "/=") {
+			s += "/=";
+		} else if (lexeme == ">") {
+			s += ">";
+		} else if (lexeme == "<") {
+			s += "<";
+		} else if (lexeme == "=>") {
+			s += "=>";
+		} else if (lexeme == "<=") {
+			s += "<=";
+		} else {
+			// idk what goes in the else part
+		}
+		return s;
 	}
+
 
 	//rule 25
 	//Expression
@@ -400,9 +458,12 @@ private:
 		}
 	}
 
-	//rule 29
+	//rule 29 *Julian*
+	// Empty
+	// <Empty> -> ε
 	string r29(string token, string lexeme){
-		return "";
+		cstate.push(Empty);
+		return "ε";
 	}
 	
 };

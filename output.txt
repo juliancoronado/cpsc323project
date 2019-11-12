@@ -17,20 +17,3 @@ identifier                       c
 separator                       ;
 	<Term Prime>->epsilon
 	<Expression Prime>->epsilon
-identifier                       x
-	<Statement>-><Assign>
-	<Assign>-> <Identifier> = <Expression>
-operator                       =
-identifier                       y
-	<Expression>-><Term><Expression Prime>
-	<Term>-> <Factor> <Term Prime>
-	<Factor>-><Identifier>
-operator                       *
-	<Term Prime>->*<Factor><Term>
-identifier                       z
-	<Expression>-><Term><Expression Prime>
-	<Term>-> <Factor> <Term Prime>
-	<Factor>-><Identifier>
-separator                       ;
-	<Term Prime>->epsilon
-	<Expression Prime>->epsilon

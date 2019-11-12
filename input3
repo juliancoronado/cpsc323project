@@ -1,1 +1,5 @@
 put(foo);
+while(x==y){
+	x=0;
+}
+return null;
