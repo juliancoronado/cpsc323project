@@ -299,12 +299,19 @@ private:
 	//Term Prime
 	//<Term Prime> -> * <Factor> <Term> | / <Factor> <Term> | epsilon
 	string r26P(string token, string lexeme){
+
 		string s;
 		s+= "\t<Term Prime>->";
 		if(lexeme!="*"&&lexeme!="/"){
 			cstate.pop();
 			s+="epsilon\n";
 			s+= r25(token, lexeme);
+		}else if(lexeme=="*"){
+			s+="*<Factor><Term>\n";
+		}else if(lexeme=="/"){
+			s+="/<Factor><Term>\n";
+		}else if(token=="identifier"){
+			s+= r26(token, lexeme);
 		}
 		return s;
 	}
