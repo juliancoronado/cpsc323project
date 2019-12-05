@@ -4,8 +4,9 @@ using namespace std;
 
 class syntacticalAnalyzer{
 public:
-	enum State {Statement, Assign, Expression, Factor, Term, Term_Prime, Expression_Prime, Declaration, Declaration_List,
-		Scan, IDs, Print, While, Condition, Relop, Empty, If, Return, Statement_List, Compound};
+	enum State {Statement, Assign, Expression, Factor, Term, Term_Prime, Expression_Prime, Opt_Declaration_List, Declaration, Declaration_List,
+		Scan, IDs, Print, While, Condition, Relop, Empty, If, Return, Statement_List, Compound,
+		Body};
 	//track current state of parser
 	stack <State> cstate;
 	//track of all tokens that have been passed to syntax analyzer
@@ -118,8 +119,7 @@ private:
 		s += "\t<Qualifier> ->";
 		if (lexeme == "int") {
 			s += "int\n";
-		}
-		else if (lexeme == "bool") {
+		}else if (lexeme == "bool") {
 			s += "boolean\n";
 		}
 		else {
@@ -128,14 +128,32 @@ private:
 		return s;
 	}
 
-	//rule 9
-	string r9(string token, string lexeme){
-		return "";
+	// Rule 9
+	// Body
+	// <Body> -> { <Statement List> }
+	string r9(string token, string lexeme) {
+		cstate.push(Body);
+		return "<Body> -> { " + r14(token, lexeme) + " }";
 	}
 
-	//rule 10
-	string r10(string token, string lexeme){
-		return "";
+	// Rule 10 *Julian*
+	// Opt Declaration List
+	// <Opt Declaration List> -> <Declaration List> | <Empty>;
+	string r10(string token, string lexeme) {
+		cstate.push(Opt_Declaration_List);
+		string s;
+
+		s += "<Opt Declaration List>";
+		s += "->";
+		
+		if (!lexeme.empty()) {
+			s += r11(token, lexeme);
+		} else {
+			// empty function
+			s += r29(token, lexeme);
+		}
+
+		return s;
 	}
 
 	// Rule 11 *Julian*
