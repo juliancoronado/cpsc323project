@@ -4,8 +4,8 @@ using namespace std;
 
 class syntacticalAnalyzer{
 public:
-	enum State {Statement, Assign, Expression, Factor, Term, Term_Prime, Expression_Prime,
-		Scan, IDs, Print, While, Condition, Relop, Empty, If, Return };
+	enum State {Statement, Assign, Expression, Factor, Term, Term_Prime, Expression_Prime, Declaration, Declaration_List,
+		Scan, IDs, Print, While, Condition, Relop, Empty, If, Return, Statement_List, Compound};
 	//track current state of parser
 	stack <State> cstate;
 	//track of all tokens that have been passed to syntax analyzer
@@ -110,8 +110,9 @@ private:
 		return "";
 	}
 
-	//rule 8
-	//<Qualifier> -> int | boolean | real
+	// Rule 8
+	// Qualifier
+	// <Qualifier> -> int | boolean | real
 	string r8(string token, string lexeme) {
 		string s;
 		s += "\t<Qualifier> ->";
@@ -122,7 +123,7 @@ private:
 			s += "boolean\n";
 		}
 		else {
-		s += "real\n";
+			s += "real\n";
 		}
 		return s;
 	}
@@ -137,79 +138,122 @@ private:
 		return "";
 	}
 
-	//rule 11
-	string r11(string token, string lexeme){
-		return "";
-	}
-
-	//rule 12
-	string r12(string token, string lexeme){
-		return "";
-	}
-
-	//rule 13
-	//IDs
-	//IDs-> <Identifier> | <Identifier>, <IDs>
-	string r13(string token, string lexeme){
+	// Rule 11 *Julian*
+	// Declaration List
+	// <Declaration List> -> <Declaration>; | <Declaration>; <Declaration List>
+	string r11(string token, string lexeme) {
+		cstate.push(Declaration_List);
 		string s;
-		if(cstate.top()!=IDs){
-			cstate.push(IDs);
-			s+= "\t<IDs>->";
-		}
-		if(token=="identifier"){
-			cstate.pop();
-			s+="<Identifier>\n";
-		}if(token=="separator"&&lexeme==","){
-			cstate.pop();
-			s+=",\n";
+		s += "<Declaration List>";
+		s += "->";
+		if (token == "identifier") {
+			s += r12(token, lexeme);
+		} else {
+			s += "\t";
 		}
 		return s;
 	}
 
-	//rule 14
-	string r14(string token, string lexeme){
-		return "";
+	// Rule 12 *Julian*
+	// Declaration
+	// <Declaration> -> <Qualifier> <IDs>
+	string r12(string token, string lexeme){
+		cstate.push(Declaration);
+		string s;
+		s += "<Declaration>";
+		s += "->";
+		if (lexeme == "int" || lexeme == "boolean" || lexeme == "real") {
+			s += r8(token, lexeme);
+		}
+		if (token == "identifier") {
+			s += r13(token, lexeme);
+		}
+		return s;
 	}
 
-	//rule 15
-	//Statement
-	//<Statement> -> <Compound> | <Assign> | <If> | <Return> | <Print> | <Scan> | <While>
-	string r15(string token, string lexeme){
+	// Rule 13
+	// IDs
+	// IDs-> <Identifier> | <Identifier>, <IDs>
+	string r13(string token, string lexeme) {
 		string s;
-		s+="\t<Statement>";
-		//<Scan>
-		if(token=="keyword"&&lexeme=="get"){
+		if (cstate.top() != IDs) {
+			cstate.push(IDs);
+			s += "\t<IDs>->";
+		}
+		if (token == "identifier") {
+			cstate.pop();
+			s += "<Identifier>\n";
+		}
+		if (token == "separator" && lexeme == ","){
+			cstate.pop();
+			s += ",\n";
+		}
+		return s;
+	}
+
+	// Rule 14 *Julian*
+	// Statement List
+	// <Statement List> -> <Statement> | <Statement> <Statement List>
+	string r14(string token, string lexeme) {
+		cstate.push(Statement_List);
+		string s;
+		s += "<Statement List>";
+		s += "->";
+		s += r15(token, lexeme);
+		return s;
+	}
+
+	// Rule 15 *Julian*
+	// Statement
+	// <Statement> -> <Compound> | <Assign> | <If> | <Return> | <Print> | <Scan> | <While>
+	string r15(string token, string lexeme){
+		cstate.push(Statement);
+		string s;
+		s += "\t<Statement>";
+		// compound
+		if (token == "keyword" && lexeme == "compound") {
 			s += "->";
 			s += r21(token, lexeme);
-		}else if(token=="identifier"){
+		} else if (token == "operator" && lexeme == "=") {
 			s+="->";
-			s+=r17(token, lexeme);
-
+			// assign
+			s+= r17(token, lexeme);
 		}  else if (token == "keyword" && lexeme == "if") {
 			// Rule 18 (if)
 			s += r18(token, lexeme);
 		} else if (token == "keyword" && lexeme == "return") {
 			// Rule 19 (return)
 			s += r19(token, lexeme);
-		} else if (token == "") {
+		} else if (token == "keyword" && lexeme == "print") {
 			// to do
-		}
-		else{
-			s+="\n";
+			s += r20(token, lexeme);
+		} else if (token == "keyword" && lexeme == "while") {
+			s += r22(token, lexeme);
+		} else {
+			s += "\n";
 		}
 		return s;
 	}
 
-	//rule 16
+	// Rule 16 *Julian*
+	// Compound
+	// <Compound> -> { <Statement List> }
 	string r16(string token, string lexeme){
-		return "";
+		cstate.push(Compound);
+		string s;
+		s += "<Compound>";
+		s += "->";
+		s += "{ ";
+		s += r14(token, lexeme);
+		s += "}";
+		return s;
 	}
 
-	//rule 17
-	//Assign
-	//<Assign> -> <Identifier> = <Expression>
+	// Rule 17
+	// Assign
+	// <Assign> -> <Identifier> = <Expression>
 	string r17(string token, string lexeme){
-		if(cstate.top()!=Assign){
+		if(cstate.top() != Assign){
 			cstate.push(Assign);
 		}
 		if(tokenstack.top()!="operator" && token=="identifier"){
@@ -231,7 +275,7 @@ private:
 		
 	}
 
-	//rule 18 *Julian*
+	// Rule 18 *Julian*
 	// If
 	// <If> -> if ( <Condition> ) <Statement> fi |
 	//	if ( <Condition> ) <Statement> otherwise <Statement> fi
@@ -249,7 +293,7 @@ private:
 		return s;
 	}
 
-	//rule 19 *Julian*
+	// Rule 19 *Julian*
 	// Return
 	// <Return> -> return; | return <Expression>;
 	string r19(string token, string lexeme){
@@ -267,7 +311,7 @@ private:
 		return s;
 	}
 
-	//rule 20 *Julian*
+	// Rule 20 *Julian*
 	// Print
 	// <Print> -> put( <Expression> );
 	string r20(string token, string lexeme){
@@ -278,8 +322,8 @@ private:
 	}
 
 
-	//rule 21
-	//<Scan> -> get ( <IDs> );
+	// Rule 21
+	// <Scan> -> get ( <IDs> );
 	string r21(string token, string lexeme){
 		string s;
 		if(cstate.top()!=Scan){
@@ -306,7 +350,7 @@ private:
 		return s;
 	}
 
-	//rule 22 *Julian*
+	// Rule 22 *Julian*
 	// While
 	// <While> -> while ( <Condition> ) <Statement>
 	string r22(string token, string lexeme){
@@ -317,7 +361,7 @@ private:
 	}
 
 
-	//rule 23 *Julian*
+	// Rule 23 *Julian*
 	// Condition
 	// <Condition> -> <Expression> <Relop> <Expression>
 	string r23(string token, string lexeme){
@@ -327,7 +371,7 @@ private:
 		return s;
 	}
 
-	//rule 24 *Julian*
+	// Rule 24 *Julian*
 	// Relop
 	// <Relop> -> == | /= | > | < | => | <=
 	string r24(string token, string lexeme){
@@ -353,10 +397,10 @@ private:
 	}
 
 
-	//rule 25
-	//Expression
-	//<Expression> -> <Term> <Expression Prime>
-	//<Expression Prime> -> + <Term> <Expression> | - <Term> <Expression> | epsilon
+	// Rule 25
+	// Expression
+	// <Expression> -> <Term> <Expression Prime>
+	// <Expression Prime> -> + <Term> <Expression> | - <Term> <Expression> | epsilon
 	string r25(string token, string lexeme){
 		string s;
 		if(cstate.top()!=Expression){
@@ -373,8 +417,9 @@ private:
 		
 	}
 
-	//Expression Prime
-	//<Expression Prime> -> + <Term> <Expression> | - <Term> <Expression> | epsilon
+	// Rule 25.2 (stops left recursion)
+	// Expression Prime
+	// <Expression Prime> -> + <Term> <Expression> | - <Term> <Expression> | epsilon
 	string r25P(string token, string lexeme){
 		string s;
 		if(cstate.top()!=Expression_Prime){
@@ -395,10 +440,10 @@ private:
 		return s;
 	}
 
-	//rule 26
-	//Term
-	//<Term>-> <Factor> <Term Prime>
-	//<Term Prime> -> * <Factor> <Term> | / <Factor> <Term> | epsilon
+	// Rule 26
+	// Term
+	// <Term>-> <Factor> <Term Prime>
+	// <Term Prime> -> * <Factor> <Term> | / <Factor> <Term> | epsilon
 	string r26(string token, string lexeme){
 		if(cstate.top()!=Term){
 			cstate.push(Term);
@@ -413,10 +458,10 @@ private:
 		}
 	}
 
+	// Rule 26.2 (stops left recursion)
 	//Term Prime
 	//<Term Prime> -> * <Factor> <Term> | / <Factor> <Term> | epsilon
-	string r26P(string token, string lexeme){
-
+	string r26P(string token, string lexeme) {
 		string s;
 		s+= "\t<Term Prime>->";
 		if(lexeme!="*"&&lexeme!="/"){
@@ -433,9 +478,9 @@ private:
 		return s;
 	}
 
-	//rule 27
-	//Factor
-	//Factor -> -<Primary> | <Primary>
+	// Rule 27
+	// Factor
+	// Factor -> -<Primary> | <Primary>
 	string r27(string token, string lexeme){
 		if(cstate.top()!=Factor){
 			cstate.push(Factor);
@@ -450,9 +495,9 @@ private:
 		return s;
 	}
 
-	//rule 28
-	//Primary
-	//Primary -> <Identifier> | <Integer> | <Identifier> (<IDs>)|(<Expression>)|<Real>|true|false
+	// Rule 28
+	// Primary
+	// Primary -> <Identifier> | <Integer> | <Identifier> (<IDs>)|(<Expression>)|<Real>|true|false
 	string r28(string token, string lexeme){
 		if(token=="identifier"){
 			return "<Identifier>\n";
@@ -461,7 +506,7 @@ private:
 		}
 	}
 
-	//rule 29 *Julian*
+	// Rule 29 *Julian*
 	// Empty
 	// <Empty> -> ε
 	string r29(string token, string lexeme){

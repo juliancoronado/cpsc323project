@@ -13,7 +13,7 @@ using namespace std;
 const vector<string> STATE_NAMES = { "keyword", "identifier", "separator", "operator", "real", "integer", "Error state" };
 const vector<string> KEYWORD_LIST = { "int", "float", "boolean", "if", "else", "then","get", "put", "while", "for", "return", "fi"};
 const vector<string> SEPARATOR_LIST = { "'", "(", ")", "[", "]", "{", "}", ",", ".", ":", ";", "!" };
-const vector<string> OPERATOR_LIST = { "*", "+", "-", "==", "/=", ">", "<", "=>", "<="};
+const vector<string> OPERATOR_LIST = { "*", "+", "-", "==", "/=", ">", "<", "=>", "<=", "="};
 syntacticalAnalyzer sa;
 
 // function protype
