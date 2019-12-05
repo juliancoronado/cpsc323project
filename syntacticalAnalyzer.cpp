@@ -4,6 +4,7 @@ using namespace std;
 
 class syntacticalAnalyzer{
 public:
+	// contains all the states listed in the syntax rules (assignment 1)
 	enum State {Statement, Assign, Expression, Factor, Term, Term_Prime, Expression_Prime, Opt_Declaration_List, Declaration, Declaration_List,
 		Scan, IDs, Print, While, Condition, Relop, Empty, If, Return, Statement_List, Compound,
 		Body, Parameter, Parameter_List, Opt_Parameter_List, Function, Function_Definitions, Opt_Function_Definitions, Rat19F};
@@ -76,14 +77,34 @@ public:
 	}
 
 private:
-	//rule 1
-	string r1(string token, string lexeme){
-		return "";
+	// Rule 1 *Julian*
+	// Rat19F
+	// <Rat19F> -> <Opt Function Definitions> %% <Opt Declaration List> <Statement List> %%
+	string r1(string token, string lexeme) {
+		cstate.push(Rat19F);
+		string s;
+		s += "<Rat19F> -> ";
+		s += r2(token, lexeme); // opt func defs
+		s += " %% ";
+		s += r10(token, lexeme); // opt dec list
+		s += r14(token, lexeme);
+		s += " %% ";
+		return s;
 	}
 
-	//rule 2
-	string r2(string token, string lexeme){
-		return "";
+	// Rule 2 *Julian*
+	// Opt Function Definitions
+	// <Opt Function Definitions> -> <Function Definitions> | <Empty>
+	string r2(string token, string lexeme) {
+		cstate.push(Opt_Function_Definitions);
+		string s;
+		s += "<Opt Function Definitions> ->";
+		if (!lexeme.empty()) {
+			s += r3(token, lexeme); // function definitions (r3)
+		} else {
+			s += r29(token, lexeme); // empty 
+		}
+		return s;
 	}
 
 	// Rule 3 *Julian*
