@@ -6,7 +6,7 @@ class syntacticalAnalyzer{
 public:
 	enum State {Statement, Assign, Expression, Factor, Term, Term_Prime, Expression_Prime, Opt_Declaration_List, Declaration, Declaration_List,
 		Scan, IDs, Print, While, Condition, Relop, Empty, If, Return, Statement_List, Compound,
-		Body};
+		Body, Parameter, Parameter_List, Opt_Parameter_List, Function, Function_Definitions, Opt_Function_Definitions, Rat19F};
 	//track current state of parser
 	stack <State> cstate;
 	//track of all tokens that have been passed to syntax analyzer
@@ -86,29 +86,69 @@ private:
 		return "";
 	}
 
-	//rule 3
-	string r3(string token, string lexeme){
-		return "";
+	// Rule 3 *Julian*
+	// Function Definitions
+	// <Function Definitions> -> <Function> | <Function> <Function Definitions>
+	string r3(string token, string lexeme) {
+		cstate.push(Function_Definitions);
+		string s;
+		s += "<Function Definitions>";
+		s += "-> ";
+		s += r4(token, lexeme); // todo (the or part)
+		return s;
 	}
 
-	//rule 4
-	string r4(string token, string lexeme){
-		return "";
+	// Rule 4 *Julian*
+	// Function
+	// <Function> -> function <Identifier> ( <Opt Parameter List> ) <Opt Declaration List> <Body>
+	string r4(string token, string lexeme) {
+		cstate.push(Function);
+		string s;
+		s += "<Function> -> ";
+		s += "function <Identifier> ( ";
+		s += r5(token, lexeme);
+		s += ") " + r10(token, lexeme);
+		s += r9(token, lexeme);
+		return s;
 	}
 
-	//rule 5
+	// Rule 5 *Julian*
+	// Opt Parameter List
+	// <Opt Parameter List> -> <Parameter List> | <Empty>
 	string r5(string token, string lexeme){
-		return "";
+		cstate.push(Opt_Parameter_List);
+		string s;
+		s += "<Opt Parameter List> ->";
+		if (!lexeme.empty()) {
+			s += r6(token, lexeme);
+		} else {
+			s += r29(token, lexeme); // empty 
+		}
+		return s;
 	}
 
-	//rule 6
+	// Rule 6 *Julian*
+	// Parameter List
+	// <Parameter List> -> <Parameter> | <Parameter>, <Parameter List>
 	string r6(string token, string lexeme){
-		return "";
+		cstate.push(Parameter_List);
+		string s;
+		s += "<Parameter List>";
+		s += "->";
+		s += r7(token, lexeme); // todo (the or part)
+		return s;
 	}
 
-	//rule 7
-	string r7(string token, string lexeme){
-		return "";
+	// Rule 7 *Julian*
+	// Parameter
+	// <Parameter> -> <IDs> <Qualifier>
+	string r7(string token, string lexeme) {
+		cstate.push(Parameter);
+		string s;
+		s += "<Parameter> ->";
+		s += r13(token, lexeme);
+		s += r8(token, lexeme);
+		return s;
 	}
 
 	// Rule 8
@@ -128,7 +168,7 @@ private:
 		return s;
 	}
 
-	// Rule 9
+	// Rule 9 *Julian*
 	// Body
 	// <Body> -> { <Statement List> }
 	string r9(string token, string lexeme) {
@@ -167,7 +207,7 @@ private:
 		if (token == "identifier") {
 			s += r12(token, lexeme);
 		} else {
-			s += "\t";
+			s += "\t"; // todo (the or part)
 		}
 		return s;
 	}
@@ -217,7 +257,7 @@ private:
 		string s;
 		s += "<Statement List>";
 		s += "->";
-		s += r15(token, lexeme);
+		s += r15(token, lexeme); // todo (the or part)
 		return s;
 	}
 
