@@ -1,10 +1,9 @@
 Token 			 Lexemes
-----------------------------------------git a-
+-----------------------------------------
 identifier                       a
-	<Statement>-><Assign>
-	<Assign>-> <Identifier> = <Expression>
+	<Statement>
 operator                       =
-identifier                       b
+	<Statement>->identifier                       b
 	<Expression>-><Term><Expression Prime>
 	<Term>-> <Factor> <Term Prime>
 	<Factor>-><Identifier>
