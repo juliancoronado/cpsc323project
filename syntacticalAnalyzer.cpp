@@ -4,19 +4,16 @@ using namespace std;
 
 class syntacticalAnalyzer{
 public:
-	enum State {Statement, Assign, Expression, Factor,Term,Term_Prime, Expression_Prime, Scan, IDs, Print, While, Condition, Relop, Empty, If, Return
-	};
+	enum State {Statement, Assign, Expression, Factor, Term, Term_Prime, Expression_Prime,
+		Scan, IDs, Print, While, Condition, Relop, Empty, If, Return };
 	//track current state of parser
 	stack <State> cstate;
 	//track of all tokens that have been passed to syntax analyzer
 	stack <string> tokenstack;
 
-
 	//for debugging
-	void showstack(stack <State> s) 
-	{ 
-	    while (!s.empty()) 
-	    { 
+	void showstack(stack <State> s) { 
+	    while (!s.empty()) { 
 	        cout << '\t' << s.top(); 
 	        s.pop(); 
 	    } 
@@ -31,37 +28,43 @@ public:
 
 	string parse(string token, string lexeme){
 		string s;
-		if(cstate.top()==Statement){
+
+		if (cstate.top() == Statement) {
 			s = r15(token, lexeme);
 			tokenstack.push(token);
 			return s;
-		}if(cstate.top()==Expression){
+		}
+		if (cstate.top() == Expression) {
 			s = r25(token, lexeme);
 			tokenstack.push(token);
 			return s;
 		}
-		if(cstate.top()==Assign){
+		if (cstate.top() == Assign) {
 		 	s = r17(token, lexeme);
 		 	tokenstack.push(token);
 		 	return s;
 		}
-		if(cstate.top()==Term_Prime){
+		if (cstate.top() == Term_Prime) {
 			s = r26P(token, lexeme);
 			tokenstack.push(token);
 			return s;
-		}if(cstate.top()==Term){
+		}
+		if (cstate.top() == Term) {
 			s = r26(token, lexeme);
 			tokenstack.push(token);
 			return s;
-		}if(cstate.top()==Expression_Prime){
+		}
+		if (cstate.top() == Expression_Prime) {
 			s = r25P(token, lexeme);
 			tokenstack.push(token);
 			return s;
-		}if(cstate.top()==Scan){
+		}
+		if (cstate.top() == Scan) {
 			s = r21(token, lexeme);
 			tokenstack.push(token);
 			return s;
-		}if(cstate.top()==IDs){
+		}
+		if (cstate.top() == IDs){
 			s = r13(token, lexeme);
 			tokenstack.push(token);
 			return s;
