@@ -1,4 +1,4 @@
-# CPSC 323 Project 1 - Creating a Lexer in C++
+# CPSC 323 Project 
 
 ### Members
 1. Julian Coronado
