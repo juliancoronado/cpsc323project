@@ -54,11 +54,11 @@ void output(vector<string> tList) {
 	ss << "-----------------------------------------\n";
 
 	for (int i = 0; i < tList.size(); i++) {
-		ss << STATE_NAMES[lexer(tList[i])] << setw(24) << tList[i] << '\n';
+		ss << "Token: " << STATE_NAMES[lexer(tList[i])] << setw(24) << "Lexeme: " << tList[i] << '\n';
 		//pass token and lexeme to syntactical analyzer
-		ss<<sa.parse(STATE_NAMES[lexer(tList[i])], tList[i]);
+		ss << sa.parse(STATE_NAMES[lexer(tList[i])], tList[i]);
 	}
-
+	//sa.printcstates();
 	cout << ss.str();
 	outfile << ss.str();
 	outfile.close();

@@ -1,72 +1,80 @@
 #include <iostream>
 #include <stack>
+#include <vector>
 using namespace std;
 
 class syntacticalAnalyzer{
 public:
 	// contains all the states listed in the syntax rules (assignment 1)
-	enum State {Statement, Assign, Expression, Factor, Term, Term_Prime, Expression_Prime, Opt_Declaration_List, Declaration, Declaration_List,
-		Scan, IDs, Print, While, Condition, Relop, Empty, If, Return, Statement_List, Compound,
+	enum State {Null, Statement, Assign, Expression, Factor, Term, Term_Prime, Expression_Prime, Opt_Declaration_List, Declaration, Declaration_List,
+		Scan, IDs, Print, While, Condition, Relop, Empty, If, Return, Statement_List, Compound, Qualifier,
 		Body, Parameter, Parameter_List, Opt_Parameter_List, Function, Function_Definitions, Opt_Function_Definitions, Rat19F};
 	//track current state of parser
-	stack <State> cstate;
+	stack <string> cstate;
 	//track of all tokens that have been passed to syntax analyzer
 	stack <string> tokenstack;
 
 	//for debugging
-	void showstack(stack <State> s) { 
-	    while (!s.empty()) { 
-	        cout << '\t' << s.top(); 
-	        s.pop(); 
-	    } 
-	    cout << '\n'; 
-	} 
+	void showstack() { 
+	    while (!tokenstack.empty()) { 
+	        cout << tokenstack.top() << endl; 
+	        tokenstack.pop(); 
+	    }
+	}
+
+	void printcstates() {
+		while (!cstate.empty()) {
+			cout << cstate.top() << endl;
+			cstate.pop();
+		}
+		cout << '\n';
+	}
 
 	//default constructor set to Statement
-	syntacticalAnalyzer(){
-		cstate.push(Statement);
+	syntacticalAnalyzer() {
+		cstate.push(enumVect[Statement]);
 		tokenstack.push("null");
 	}
 
 	string parse(string token, string lexeme){
 		string s;
 
-		if (cstate.top() == Statement) {
+		if (cstate.top() == enumVect[Statement]) {
 			s = r15(token, lexeme);
 			tokenstack.push(token);
 			return s;
 		}
-		if (cstate.top() == Expression) {
+		if (cstate.top() == enumVect[Expression]) {
 			s = r25(token, lexeme);
 			tokenstack.push(token);
 			return s;
 		}
-		if (cstate.top() == Assign) {
+		if (cstate.top() == enumVect[Assign]) {
 		 	s = r17(token, lexeme);
 		 	tokenstack.push(token);
 		 	return s;
 		}
-		if (cstate.top() == Term_Prime) {
+		if (cstate.top() == enumVect[Term_Prime]) {
 			s = r26P(token, lexeme);
 			tokenstack.push(token);
 			return s;
 		}
-		if (cstate.top() == Term) {
+		if (cstate.top() == enumVect[Term]) {
 			s = r26(token, lexeme);
 			tokenstack.push(token);
 			return s;
 		}
-		if (cstate.top() == Expression_Prime) {
+		if (cstate.top() == enumVect[Expression_Prime]) {
 			s = r25P(token, lexeme);
 			tokenstack.push(token);
 			return s;
 		}
-		if (cstate.top() == Scan) {
+		if (cstate.top() == enumVect[Scan]) {
 			s = r21(token, lexeme);
 			tokenstack.push(token);
 			return s;
 		}
-		if (cstate.top() == IDs){
+		if (cstate.top() == enumVect[IDs]){
 			s = r13(token, lexeme);
 			tokenstack.push(token);
 			return s;
@@ -76,12 +84,16 @@ public:
 		}
 	}
 
+	string enumVect[31] = {"Null", "Statement", "Assign", "Expression", "Factor", "Term", "Term_Prime", "Expression_Prime", "Opt_Declaration_List", "Declaration", "Declaration_List",
+		"Scan", "IDs", "Print", "While", "Condition", "Relop", "Empty", "If", "Return", "Statement_List", "Compound", "Qualifier",
+		"Body", "Parameter", "Parameter_List", "Opt_Parameter_List", "Function", "Function_Definitions", "Opt_Function_Definitions", "Rat19F"};
+
 private:
 	// Rule 1 *Julian*
 	// Rat19F
 	// <Rat19F> -> <Opt Function Definitions> %% <Opt Declaration List> <Statement List> %%
 	string r1(string token, string lexeme) {
-		cstate.push(Rat19F);
+		cstate.push(enumVect[Rat19F]);
 		string s;
 		s += "<Rat19F> -> ";
 		s += r2(token, lexeme); // opt func defs
@@ -96,7 +108,7 @@ private:
 	// Opt Function Definitions
 	// <Opt Function Definitions> -> <Function Definitions> | <Empty>
 	string r2(string token, string lexeme) {
-		cstate.push(Opt_Function_Definitions);
+		cstate.push(enumVect[Opt_Function_Definitions]);
 		string s;
 		s += "<Opt Function Definitions> ->";
 		if (!lexeme.empty()) {
@@ -111,7 +123,7 @@ private:
 	// Function Definitions
 	// <Function Definitions> -> <Function> | <Function> <Function Definitions>
 	string r3(string token, string lexeme) {
-		cstate.push(Function_Definitions);
+		cstate.push(enumVect[Function_Definitions]);
 		string s;
 		s += "<Function Definitions>";
 		s += "-> ";
@@ -123,7 +135,7 @@ private:
 	// Function
 	// <Function> -> function <Identifier> ( <Opt Parameter List> ) <Opt Declaration List> <Body>
 	string r4(string token, string lexeme) {
-		cstate.push(Function);
+		cstate.push(enumVect[Function]);
 		string s;
 		s += "<Function> -> ";
 		s += "function <Identifier> ( ";
@@ -137,7 +149,7 @@ private:
 	// Opt Parameter List
 	// <Opt Parameter List> -> <Parameter List> | <Empty>
 	string r5(string token, string lexeme){
-		cstate.push(Opt_Parameter_List);
+		cstate.push(enumVect[Opt_Parameter_List]);
 		string s;
 		s += "<Opt Parameter List> ->";
 		if (!lexeme.empty()) {
@@ -152,7 +164,7 @@ private:
 	// Parameter List
 	// <Parameter List> -> <Parameter> | <Parameter>, <Parameter List>
 	string r6(string token, string lexeme){
-		cstate.push(Parameter_List);
+		cstate.push(enumVect[Parameter_List]);
 		string s;
 		s += "<Parameter List>";
 		s += "->";
@@ -164,7 +176,7 @@ private:
 	// Parameter
 	// <Parameter> -> <IDs> <Qualifier>
 	string r7(string token, string lexeme) {
-		cstate.push(Parameter);
+		cstate.push(enumVect[Parameter]);
 		string s;
 		s += "<Parameter> ->";
 		s += r13(token, lexeme);
@@ -176,6 +188,7 @@ private:
 	// Qualifier
 	// <Qualifier> -> int | boolean | real
 	string r8(string token, string lexeme) {
+		cstate.push(enumVect[Qualifier]);
 		string s;
 		s += "\t<Qualifier> ->";
 		if (lexeme == "int") {
@@ -193,7 +206,7 @@ private:
 	// Body
 	// <Body> -> { <Statement List> }
 	string r9(string token, string lexeme) {
-		cstate.push(Body);
+		cstate.push(enumVect[Body]);
 		return "<Body> -> { " + r14(token, lexeme) + " }";
 	}
 
@@ -201,7 +214,7 @@ private:
 	// Opt Declaration List
 	// <Opt Declaration List> -> <Declaration List> | <Empty>;
 	string r10(string token, string lexeme) {
-		cstate.push(Opt_Declaration_List);
+		cstate.push(enumVect[Opt_Declaration_List]);
 		string s;
 
 		s += "<Opt Declaration List>";
@@ -221,7 +234,7 @@ private:
 	// Declaration List
 	// <Declaration List> -> <Declaration>; | <Declaration>; <Declaration List>
 	string r11(string token, string lexeme) {
-		cstate.push(Declaration_List);
+		cstate.push(enumVect[Declaration_List]);
 		string s;
 		s += "<Declaration List>";
 		s += "->";
@@ -237,7 +250,7 @@ private:
 	// Declaration
 	// <Declaration> -> <Qualifier> <IDs>
 	string r12(string token, string lexeme){
-		cstate.push(Declaration);
+		cstate.push(enumVect[Declaration]);
 		string s;
 		s += "<Declaration>";
 		s += "->";
@@ -255,8 +268,8 @@ private:
 	// IDs-> <Identifier> | <Identifier>, <IDs>
 	string r13(string token, string lexeme) {
 		string s;
-		if (cstate.top() != IDs) {
-			cstate.push(IDs);
+		if (cstate.top() != enumVect[IDs]) {
+			cstate.push(enumVect[IDs]);
 			s += "\t<IDs>->";
 		}
 		if (token == "identifier") {
@@ -274,7 +287,7 @@ private:
 	// Statement List
 	// <Statement List> -> <Statement> | <Statement> <Statement List>
 	string r14(string token, string lexeme) {
-		cstate.push(Statement_List);
+		cstate.push(enumVect[Statement_List]);
 		string s;
 		s += "<Statement List>";
 		s += "->";
@@ -286,7 +299,7 @@ private:
 	// Statement
 	// <Statement> -> <Compound> | <Assign> | <If> | <Return> | <Print> | <Scan> | <While>
 	string r15(string token, string lexeme){
-		cstate.push(Statement);
+		cstate.push(enumVect[Statement]);
 		string s;
 		s += "\t<Statement>";
 		// compound
@@ -294,7 +307,7 @@ private:
 			s += "->";
 			s += r21(token, lexeme);
 		} else if (token == "operator" && lexeme == "=") {
-			s+="->";
+			s += "-> <Assign>\n";
 			// assign
 			s+= r17(token, lexeme);
 		}  else if (token == "keyword" && lexeme == "if") {
@@ -318,7 +331,7 @@ private:
 	// Compound
 	// <Compound> -> { <Statement List> }
 	string r16(string token, string lexeme){
-		cstate.push(Compound);
+		cstate.push(enumVect[Compound]);
 		string s;
 		s += "<Compound>";
 		s += "->";
@@ -332,20 +345,20 @@ private:
 	// Assign
 	// <Assign> -> <Identifier> = <Expression>
 	string r17(string token, string lexeme){
-		if(cstate.top() != Assign){
-			cstate.push(Assign);
+		if(cstate.top() != enumVect[Assign]){
+			cstate.push(enumVect[Assign]);
 		}
-		if(tokenstack.top()!="operator" && token=="identifier"){
+		if(tokenstack.top() != "operator" && token == "identifier"){
 			string s;
 			s+="<Assign>";
 			s+="\n\t<Assign>-> <Identifier> = <Expression>\n";
 			return s; 
 		}
-		if(token=="operator"&&lexeme=="="){
+		if(token=="operator" && lexeme == "="){
 			return "";
-		}if(tokenstack.top()=="operator"){
+		}if(tokenstack.top() == "operator"){
 			return r25(token,lexeme);
-		}else if(lexeme==";"){
+		}else if(lexeme == ";"){
 			cstate.pop();
 			return "";
 		}else{
@@ -359,7 +372,7 @@ private:
 	// <If> -> if ( <Condition> ) <Statement> fi |
 	//	if ( <Condition> ) <Statement> otherwise <Statement> fi
 	string r18(string token, string lexeme){
-		cstate.push(If);
+		cstate.push(enumVect[If]);
 		string s;
 		// TODO needs some sort of check here bc idk how to check
 		// for which one to add to s
@@ -376,7 +389,7 @@ private:
 	// Return
 	// <Return> -> return; | return <Expression>;
 	string r19(string token, string lexeme){
-		cstate.push(Return);
+		cstate.push(enumVect[Return]);
 		string s;
 		s += "<Return>-> ";
 		// idk if this is right, but it checks if the return string
@@ -394,7 +407,7 @@ private:
 	// Print
 	// <Print> -> put( <Expression> );
 	string r20(string token, string lexeme){
-		cstate.push(Print);
+		cstate.push(enumVect[Print]);
 		string s;
 		s += "<Print> -> put(" + r25(token, lexeme) + ");";
 		return s;
@@ -403,27 +416,27 @@ private:
 
 	// Rule 21
 	// <Scan> -> get ( <IDs> );
-	string r21(string token, string lexeme){
+	string r21(string token, string lexeme) {
 		string s;
-		if(cstate.top()!=Scan){
-			cstate.push(Scan);
-			s+= "<Scan>\n";
-			s+= "\t<Scan>->get(<IDs>);\n";
+		if(cstate.top() != enumVect[Scan]) {
+			cstate.push(enumVect[Scan]);
+			s += "<Scan>\n";
+			s += "\t<Scan>->get(<IDs>);\n";
 		}
-		if(token=="keyword" && lexeme=="get"){
-			s+="";
+		if(token == "keyword" && lexeme=="get") {
+			s +="";
 		}
-		if(token=="separator"&&lexeme=="("){
-			s+="";
+		if(token == "separator" && lexeme == "(") {
+			s +="";
 		}
-		if(token=="identifier"||token=="separator"&&lexeme==","){
-			s+= r13(token,lexeme);
+		if(token=="identifier" || token == "separator" && lexeme == ",") {
+			s += r13(token,lexeme);
 		}
-		if(token=="separator"&&lexeme==")"){
-			s+="";
+		if(token == "separator" && lexeme == ")") {
+			s +="";
 		}
-		if(token=="separator"&&lexeme==";"){
-			s+="\n";
+		if(token == "separator" && lexeme == ";"){
+			s +="\n";
 			cstate.pop();
 		}
 		return s;
@@ -433,7 +446,7 @@ private:
 	// While
 	// <While> -> while ( <Condition> ) <Statement>
 	string r22(string token, string lexeme){
-		cstate.push(While);
+		cstate.push(enumVect[While]);
 		string s;
 		s += "<While>->(" + r23(token, lexeme) + ")<Statement>";
 		return s;
@@ -444,7 +457,7 @@ private:
 	// Condition
 	// <Condition> -> <Expression> <Relop> <Expression>
 	string r23(string token, string lexeme){
-		cstate.push(Condition);
+		cstate.push(enumVect[Condition]);
 		string s;
 		s += "<Condition>->" + r25(token, lexeme) + "<Relop>" + r25(token,lexeme);
 		return s;
@@ -454,7 +467,7 @@ private:
 	// Relop
 	// <Relop> -> == | /= | > | < | => | <=
 	string r24(string token, string lexeme){
-		cstate.push(Relop);
+		cstate.push(enumVect[Relop]);
 		string s;
 		// ----- maybe these can all be return statements??? ------
 		if (lexeme == "==") {
@@ -482,8 +495,8 @@ private:
 	// <Expression Prime> -> + <Term> <Expression> | - <Term> <Expression> | epsilon
 	string r25(string token, string lexeme){
 		string s;
-		if(cstate.top()!=Expression){
-			cstate.push(Expression);
+		if(cstate.top()!= enumVect[Expression]){
+			cstate.push(enumVect[Expression]);
 		}if(token!="operator"&&token!="separator"){
 			s+= "\t<Expression>-><Term><Expression Prime>\n";
 			s+= r26(token, lexeme);
@@ -501,8 +514,8 @@ private:
 	// <Expression Prime> -> + <Term> <Expression> | - <Term> <Expression> | epsilon
 	string r25P(string token, string lexeme){
 		string s;
-		if(cstate.top()!=Expression_Prime){
-			cstate.push(Expression_Prime);
+		if(cstate.top()!= enumVect[Expression_Prime]){
+			cstate.push(enumVect[Expression_Prime]);
 			s+= "\t<Expression Prime>->";
 		}
 		if(lexeme=="+"){
@@ -524,9 +537,9 @@ private:
 	// <Term>-> <Factor> <Term Prime>
 	// <Term Prime> -> * <Factor> <Term> | / <Factor> <Term> | epsilon
 	string r26(string token, string lexeme){
-		if(cstate.top()!=Term){
-			cstate.push(Term);
-		}if(token!="operator"&&token!="separator"){
+		if(cstate.top()!= enumVect[Term]){
+			cstate.push(enumVect[Term]);
+		}if(token != "operator" && token != "separator"){
 			string s;
 			s+="\t<Term>-> <Factor> <Term Prime>\n";
 			s+= r27(token,lexeme);
@@ -561,8 +574,8 @@ private:
 	// Factor
 	// Factor -> -<Primary> | <Primary>
 	string r27(string token, string lexeme){
-		if(cstate.top()!=Factor){
-			cstate.push(Factor);
+		if(cstate.top()!= enumVect[Factor]){
+			cstate.push(enumVect[Factor]);
 		}
 		if(lexeme=="-"){
 			return "";
@@ -589,7 +602,7 @@ private:
 	// Empty
 	// <Empty> -> ε
 	string r29(string token, string lexeme){
-		cstate.push(Empty);
+		cstate.push(enumVect[Empty]);
 		return "ε";
 	}
 	
