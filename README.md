@@ -7,9 +7,10 @@
 
 ### How to run code
 
-With the latest version of gcc and g++ installed in Linux, run the following:
+With the latest version of g++ installed in Linux, run the following:
 
 $ sh run.sh
 
-(The file run.sh contains all the commands that compile the files and execute them.)
+run.sh contains all the commands needed to run the program
 
+run.out is the executable file
