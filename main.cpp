@@ -65,7 +65,7 @@ int main() {
 	parsedList = parse(inputfile);
 	
 	output(parsedList);
-
+    cout << "Completed program - check output.txt.\n";
 	return 0;
 }
 
