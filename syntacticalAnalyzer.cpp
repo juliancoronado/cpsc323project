@@ -23,6 +23,7 @@ public:
 	}
 
 	void printcstates() {
+		cout << "Length of cstates: " << cstate.size() << endl;
 		while (!cstate.empty()) {
 			cout << cstate.top() << endl;
 			cstate.pop();
@@ -299,7 +300,7 @@ private:
 	// Statement
 	// <Statement> -> <Compound> | <Assign> | <If> | <Return> | <Print> | <Scan> | <While>
 	string r15(string token, string lexeme){
-		cstate.push(enumVect[Statement]);
+		//cstate.push(enumVect[Statement]);
 		string s;
 		s += "\t<Statement>";
 		// compound
@@ -345,15 +346,14 @@ private:
 	// Assign
 	// <Assign> -> <Identifier> = <Expression>
 	string r17(string token, string lexeme){
-		if(cstate.top() != enumVect[Assign]){
-			cstate.push(enumVect[Assign]);
-		}
+		cstate.push(enumVect[Assign]);
+
 		if(tokenstack.top() != "operator" && token == "identifier"){
 			string s;
 			s+="<Assign>";
 			s+="\n\t<Assign>-> <Identifier> = <Expression>\n";
 			return s; 
-		}
+		} 
 		if(token=="operator" && lexeme == "="){
 			return "";
 		}if(tokenstack.top() == "operator"){
