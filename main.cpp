@@ -34,9 +34,6 @@ int main() {
 
 	cout << "Enter the file name: ";
 	cin >> fileName;
-	// THIS IS BECAUSE I MOVED THE INPUT FILES INTO THEIR OWN FOLDER
-	// seems to be working on ONLY input1 and input2... Idk why.
-	//string _filename = "samples/" + fileName;
 	string inputfile = readFile(fileName);
 
 	// calls parse function on text to separate it into individual items
