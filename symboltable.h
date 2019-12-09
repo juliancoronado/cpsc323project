@@ -11,7 +11,7 @@ struct values {
 
 class st {
     public:
-    
+
         void add(string id, int addr, string type) {
             values v;
             v.address = addr;
@@ -21,4 +21,4 @@ class st {
 
     private:
         map<string, values> symtable;
-}
+};
