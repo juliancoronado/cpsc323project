@@ -22,6 +22,10 @@ public:
 	    }
 	}
 
+	string curr_state() {
+		return cstate.top();
+	}
+
 	void printcstates() {
 		cout << "Length of cstates: " << cstate.size() << endl;
 		while (!cstate.empty()) {

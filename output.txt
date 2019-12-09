@@ -1,5 +1,19 @@
 Token 			 Lexemes
 -----------------------------------------
+Token: keyword                Lexeme: get
+	<Statement>
+Token: separator                Lexeme: (
+	<Statement>
+Token: identifier                Lexeme: price
+	<Statement>
+Token: separator                Lexeme: ,
+	<Statement>
+Token: identifier                Lexeme: quantity
+	<Statement>
+Token: separator                Lexeme: )
+	<Statement>
+Token: separator                Lexeme: ;
+	<Statement>
 Token: identifier                Lexeme: a
 	<Statement>
 Token: operator                Lexeme: =
@@ -12,6 +26,46 @@ Token: operator                Lexeme: +
 	<Term Prime>->epsilon
 	<Expression Prime>->+<Term><Expression_Prime>
 Token: identifier                Lexeme: c
+	<Term>-> <Factor> <Term Prime>
+	<Factor>-><Identifier>
+Token: separator                Lexeme: ;
+	<Term Prime>->epsilon
+	<Expression Prime>->epsilon
+Token: identifier                Lexeme: a
+<Assign>
+	<Assign>-> <Identifier> = <Expression>
+Token: operator                Lexeme: =
+Token: identifier                Lexeme: x
+	<Expression>-><Term><Expression Prime>
+	<Term>-> <Factor> <Term Prime>
+	<Factor>-><Identifier>
+Token: operator                Lexeme: +
+	<Term Prime>->epsilon
+	<Expression Prime>->+<Term><Expression_Prime>
+Token: identifier                Lexeme: y
+	<Term>-> <Factor> <Term Prime>
+	<Factor>-><Identifier>
+Token: operator                Lexeme: +
+	<Term Prime>->epsilon
+	<Expression Prime>->+<Term><Expression_Prime>
+Token: identifier                Lexeme: c
+	<Term>-> <Factor> <Term Prime>
+	<Factor>-><Identifier>
+Token: separator                Lexeme: ;
+	<Term Prime>->epsilon
+	<Expression Prime>->epsilon
+Token: identifier                Lexeme: x
+<Assign>
+	<Assign>-> <Identifier> = <Expression>
+Token: operator                Lexeme: =
+Token: identifier                Lexeme: a
+	<Expression>-><Term><Expression Prime>
+	<Term>-> <Factor> <Term Prime>
+	<Factor>-><Identifier>
+Token: operator                Lexeme: *
+	<Term Prime>->*<Factor><Term>
+Token: identifier                Lexeme: c
+	<Expression>-><Term><Expression Prime>
 	<Term>-> <Factor> <Term Prime>
 	<Factor>-><Identifier>
 Token: separator                Lexeme: ;

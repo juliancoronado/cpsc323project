@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iomanip>
 #include "syntacticalAnalyzer.cpp"
+#include "symboltable.cpp"
 
 using namespace std;
 
@@ -15,6 +16,7 @@ const vector<string> KEYWORD_LIST = { "int", "float", "boolean", "if", "else", "
 const vector<string> SEPARATOR_LIST = { "'", "(", ")", "[", "]", "{", "}", ",", ".", ":", ";", "!" };
 const vector<string> OPERATOR_LIST = { "*", "+", "-", "==", "/=", ">", "<", "=>", "<=", "="};
 syntacticalAnalyzer sa;
+symboltable st;
 
 // function protype
 vector<string> parse(string);
@@ -54,13 +56,19 @@ void output(vector<string> tList) {
 	ss << "-----------------------------------------\n";
 
 	for (int i = 0; i < tList.size(); i++) {
-		ss << "Token: " << STATE_NAMES[lexer(tList[i])] << setw(24) << "Lexeme: " << tList[i] << '\n';
+		string lexeme = tList[i];
+		string token = STATE_NAMES[lexer(lexeme)];
+		ss << "Token: " << token << setw(24) << "Lexeme: " << lexeme << '\n';
 		//pass token and lexeme to syntactical analyzer
 		ss << sa.parse(STATE_NAMES[lexer(tList[i])], tList[i]);
+		if (token == "identifier" && !st.exists(lexeme)) {
+			st.add(lexeme);
+		}
 	}
-	sa.showstack();
+	// sa.showstack();
 	cout << ss.str();
 	outfile << ss.str();
+	st.displaymap();
 	outfile.close();
 
 }
