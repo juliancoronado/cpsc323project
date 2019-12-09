@@ -1,19 +1,33 @@
-Token 			 Lexemes
------------------------------------------
-Token: identifier                Lexeme: a
-	<Statement>
-Token: operator                Lexeme: =
-	<Statement>-> <Assign>
-Token: identifier                Lexeme: b
-	<Expression>-><Term><Expression Prime>
-	<Term>-> <Factor> <Term Prime>
-	<Factor>-><Identifier>
-Token: operator                Lexeme: +
-	<Term Prime>->epsilon
-	<Expression Prime>->+<Term><Expression_Prime>
-Token: identifier                Lexeme: c
-	<Term>-> <Factor> <Term Prime>
-	<Factor>-><Identifier>
-Token: separator                Lexeme: ;
-	<Term Prime>->epsilon
-	<Expression Prime>->epsilon
+Token: keyword		Lexeme: int
+<Qualifier> -> int
+Token: identifier		Lexeme: var1
+<IDs> -> <Identifier>
+Token: separator		Lexeme: ,
+Token: identifier		Lexeme: var2
+<IDs> -> <Identifier>
+Token: separator		Lexeme: ;
+<Term Prime> -> epsilon
+<Factor> -> <Identifier>
+Token: keyword		Lexeme: int
+<Qualifier> -> int
+Token: identifier		Lexeme: result
+<IDs> -> <Identifier>
+Token: separator		Lexeme: ;
+<Term Prime> -> epsilon
+<Factor> -> <Identifier>
+Token: identifier		Lexeme: result
+<Statement> -> <Assign>
+<Assign> -> <Identifier> = <Expression>;
+Token: operator		Lexeme: =
+Token: identifier		Lexeme: var1
+<Statement> -> <Assign>
+<Assign> -> <Identifier> = <Expression>;
+Token: operator		Lexeme: +
+<Term Prime> -> epsilon
+<Expression Prime> -> + <Term> <Expression Prime>
+Token: identifier		Lexeme: var2
+<Statement> -> <Assign>
+<Assign> -> <Identifier> = <Expression>;
+Token: separator		Lexeme: ;
+<Term Prime> -> epsilon
+<Factor> -> <Identifier>
