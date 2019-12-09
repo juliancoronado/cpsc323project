@@ -42,6 +42,10 @@ class symboltable {
             }
         }
 
+        map<string, values> getTable() {
+            return symtable;
+        }
+
     private:
         int curr_addr = 5000;
         map<string, values> symtable;

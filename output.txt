@@ -103,3 +103,31 @@ Token: separator                Lexeme: )
 	<Term Prime>->epsilon
 	<Expression Prime>->epsilon
 Token: separator                Lexeme: ;
+
+INSTRUCTION TABLE (without nil oprnds)
+Address: 1
+Op: POPM
+Operand: 5002
+Address: 2
+Op: POPM
+Operand: 5000
+Address: 6
+Op: POPM
+Operand: 5002
+Address: 9
+Op: POPM
+Operand: 5000
+
+SYMBOL TABLE
+Key: i
+Address: 5000
+Type: integer
+Key: identifier
+Address: 0
+Type: 
+Key: max
+Address: 5001
+Type: integer
+Key: sum
+Address: 5002
+Type: integer

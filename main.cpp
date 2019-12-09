@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <map>
-#include "syntacticalAnalyzer.cpp"
+#include "syntaxanalyzer.cpp"
 #include "symboltable.cpp"
 
 using namespace std;
@@ -96,14 +96,30 @@ void output(vector<string> tList) {
 			st.add(lexeme);
 		}
 	}
-	cout << ss.str();
+    // adds tokens, lexemes, and production rules to the output file
 	outfile << ss.str();
-	cout << "\nSYMBOL TABLE" << endl;
-	st.displaymap();
-    cout << "\n INSTRUCTION TABLE" << endl;
-    displayTable();
+    // adds instruction table to the output file
+    outfile << "\nINSTRUCTION TABLE (without nil oprnds)" << endl;
+    map<int, inst>::iterator it;
+    for (it = instr_table.begin(); it != instr_table.end(); it++) {
+        if (it->second.oprnd == 0) {
+            continue;
+        } else {
+            outfile << "Address: " << it->second.address << endl;
+            outfile << "Op: " << it->second.op << endl;
+            outfile << "Operand: " << it->second.oprnd << endl;
+        }
+    }
+    // adds symbol table to the output file
+    outfile << "\nSYMBOL TABLE" << endl;
+    map<string, values> tempMap = st.getTable();
+    map<string, values>::iterator itr;
+    for (itr = tempMap.begin(); itr != tempMap.end(); itr++) {
+                outfile << "Key: " << itr->first << endl;
+                outfile << "Address: " << itr->second.address << endl;
+                outfile << "Type: " << itr->second.type << endl;
+    }
 	outfile.close();
-
 }
 
 //fsm to check for identifier
@@ -322,7 +338,7 @@ void E_prime() {
         global_index++;
         global_token = STATE_NAMES[lexer(next_lex)];
         T();
-        gen_instr("ADD", NULL);
+        gen_instr("ADD", 0);
         E_prime();
   }
 };
@@ -341,7 +357,7 @@ void T_prime() {
         global_token = STATE_NAMES[lexer(next_lex)];
         F();
         // cout << "T_Prime\n";
-        gen_instr("MUL", NULL);
+        gen_instr("MUL", 0);
         T_prime();
     }
 };
@@ -369,8 +385,8 @@ void gen_instr(string op, int oprnd) {
 void displayTable() {
     map<int, inst>::iterator it;
     for (it = instr_table.begin(); it != instr_table.end(); it++) {
-                cout << "Address: " << it->second.address << endl;
-                cout << "Op: " << it->second.op << endl;
-                cout << "Operand: " << it->second.oprnd << endl;
-            }
+        cout << "Address: " << it->second.address << endl;
+        cout << "Op: " << it->second.op << endl;
+        cout << "Operand: " << it->second.oprnd << endl;
+    }
 }
