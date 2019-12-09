@@ -5,10 +5,18 @@
 #include <sstream>
 #include <algorithm>
 #include <iomanip>
+#include <map>
 #include "syntacticalAnalyzer.cpp"
 #include "symboltable.cpp"
 
 using namespace std;
+
+// struct for intruction table
+struct inst {
+    int address;
+    string op;
+    int oprnd;
+};
 
 // global constants
 const vector<string> STATE_NAMES = { "keyword", "identifier", "separator", "operator", "real", "integer", "Error state" };
@@ -17,8 +25,21 @@ const vector<string> SEPARATOR_LIST = { "'", "(", ")", "[", "]", "{", "}", ",", 
 const vector<string> OPERATOR_LIST = { "*", "+", "-", "==", "/=", ">", "<", "=>", "<=", "="};
 syntacticalAnalyzer sa;
 symboltable st;
+int instr_address = 0;
+map<int, inst> instr_table;
+string temp;
+string global_token;
+string global_tstate;
 
 // function protype
+void A();
+void E();
+void T();
+void E_prime();
+void T_prime();
+void F();
+void gen_instr(string, int);
+void displayTable();
 vector<string> parse(string);
 string readFile(string);
 bool fsmIdentifier(string);
@@ -55,6 +76,13 @@ void output(vector<string> tList) {
 	for (int i = 0; i < tList.size(); i++) {
 		string lexeme = tList[i];
 		string token = STATE_NAMES[lexer(lexeme)];
+        global_token = token;
+        global_tstate = lexer(lexeme);
+        int tstate = lexer(lexeme);
+        // TODO
+        if (token == "identifier") {
+            A();
+        }
 		ss << "Token: " << token << setw(24) << "Lexeme: " << lexeme << '\n';
 		//pass token and lexeme to syntactical analyzer
 		ss << sa.parse(token, lexeme);
@@ -66,6 +94,8 @@ void output(vector<string> tList) {
 	outfile << ss.str();
 	cout << "\nSYMBOL TABLE" << endl;
 	st.displaymap();
+    cout << "\n INSTRUCTION TABLE" << endl;
+    displayTable();
 	outfile.close();
 
 }
@@ -96,13 +126,13 @@ bool fsmInteger(string value){
 
 //fsm to check for real
 bool fsmReal(string value){
-	bool period=false;
-	int pcount=0;
+	bool period = false;
+	int pcount = 0;
 	if(isdigit(value.at(0))){
-		for(int i=0; i<value.length(); i++){
+		for(int i = 0; i < value.length(); i++){
 			//check if character is a period and is not the last character in the lexeme
 			if((int)value.at(i) == 46 && i!=(value.length()-1)){
-				period=true;
+				period = true;
 				pcount++;
 			}
 			//else if: check if the character is a valid digit
@@ -111,7 +141,7 @@ bool fsmReal(string value){
 			}
 		}
 		//check if the lexeme has a period and that period only occurs once
-		if(pcount=1 && period){
+		if(pcount == 1 && period){
 			return true;
 		}
 	}
@@ -120,7 +150,7 @@ bool fsmReal(string value){
 //lexer function
 int lexer(string token){
 	//initialize to error state
-	int token_state=6;
+	int token_state = 6;
 	if (find(KEYWORD_LIST.begin(), KEYWORD_LIST.end(), token) != KEYWORD_LIST.end()) {
 		token_state = 0;
 	}else if (fsmIdentifier(token)) {
@@ -244,4 +274,77 @@ string readFile(string filename) {
 
 	return text;
 
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
+void A() {
+    if (global_token == "identifier") {
+        temp = global_token;
+        string next_token = STATE_NAMES[lexer(temp)];
+        // this won't get the proper next token?
+        if (next_token == "=") {
+            string next_token = STATE_NAMES[lexer(global_token)];
+            E();
+            gen_instr("POPM", st.getaddr(temp));
+        } else {
+            cout << "ERROR: = expected" << endl;
+    }
+  } else {cout << "ERROR: id expected" << endl;}
+};
+
+void E() {
+    T();
+    E_prime();
+};
+
+void E_prime() {
+    if (global_token == "+") {
+        string next_token = STATE_NAMES[lexer(global_token)];
+        // same thing here?
+        T();
+        gen_instr("ADD", NULL);
+        E_prime();
+  }
+};
+
+void T() {
+    F();
+    T_prime();
+};
+
+void T_prime() {
+    if (global_token == "*") {
+        string next_token = STATE_NAMES[lexer(temp)];
+        // here too
+        F();
+        gen_instr("MUL", NULL);
+        T_prime();
+    }
+};
+
+void F() {
+    if (lexer(global_token) == 1) {
+        gen_instr("PUSHM", st.getaddr(global_token));
+        global_token = STATE_NAMES[lexer(global_token)];
+        // also same thing here
+    } else {
+        cout << "ERROR: id expected" << endl;
+    }
+};
+
+void gen_instr(string op, int oprnd) {
+    instr_table[instr_address].address = instr_address;
+    instr_table[instr_address].op = op;
+    instr_table[instr_address].oprnd = oprnd;
+    instr_address++;
+};
+
+void displayTable() {
+    map<int, inst>::iterator it;
+    for (it = instr_table.begin(); it != instr_table.end(); it++) {
+                cout << "Address: " << it->second.address << endl;
+                cout << "Op: " << it->second.op << endl;
+                cout << "Operand: " << it->second.oprnd << endl;
+            }
 }

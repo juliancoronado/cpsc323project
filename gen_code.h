@@ -26,7 +26,7 @@ void A(string token) {
     if (token == "=") {
         // lexer();
         E();
-        get_instr("POPM", get_address(save));
+        gen_instr("POPM", get_address(save));
     } else {
         cout << "ERROR: = expected" << endl;
     }
