@@ -28,12 +28,17 @@ class symboltable {
             }
         }
 
+        // return address given an identifier
+        int getaddr(string id) {
+            return symtable[id].address;
+        }
+
         void displaymap() {
             map<string, values>::iterator it;
             for (it = symtable.begin(); it != symtable.end(); it++) {
                 cout << "Key: " << it->first << endl;
                 cout << "Address: " << it->second.address << endl;
-                cout << "Type: " << it->second.type << endl << endl;
+                cout << "Type: " << it->second.type << endl;
             }
         }
 

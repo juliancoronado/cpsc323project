@@ -60,14 +60,14 @@ void output(vector<string> tList) {
 		string token = STATE_NAMES[lexer(lexeme)];
 		ss << "Token: " << token << setw(24) << "Lexeme: " << lexeme << '\n';
 		//pass token and lexeme to syntactical analyzer
-		ss << sa.parse(STATE_NAMES[lexer(tList[i])], tList[i]);
+		ss << sa.parse(token, lexeme);
 		if (token == "identifier" && !st.exists(lexeme)) {
 			st.add(lexeme);
 		}
 	}
-	// sa.showstack();
 	cout << ss.str();
 	outfile << ss.str();
+	cout << "\nSYMBOL TABLE" << endl;
 	st.displaymap();
 	outfile.close();
 
