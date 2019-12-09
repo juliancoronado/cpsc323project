@@ -1,4 +1,4 @@
-Token 			 Lexemes
+Token 				 Lexemes
 -----------------------------------------
 Token: keyword                Lexeme: int
 	<Statement>
@@ -122,9 +122,6 @@ SYMBOL TABLE
 Key: i
 Address: 5000
 Type: integer
-Key: identifier
-Address: 0
-Type: 
 Key: max
 Address: 5001
 Type: integer

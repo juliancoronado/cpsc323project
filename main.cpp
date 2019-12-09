@@ -57,7 +57,7 @@ int main() {
 	// vector<string> parsedList;
 	string fileName;
 
-	cout << "Enter the file name: ";
+	cout << "Enter the file name (input is our sample): ";
 	cin >> fileName;
 	string inputfile = readFile(fileName);
 
@@ -74,7 +74,7 @@ void output(vector<string> tList) {
 	stringstream ss;
 	outfile.open("output.txt");
 
-	ss << "Token \t\t\t Lexemes\n";
+	ss << "Token \t\t\t\t Lexemes\n";
 	ss << "-----------------------------------------\n";
 
 	for (int i = 0; i < tList.size(); i++) {
@@ -85,7 +85,7 @@ void output(vector<string> tList) {
         global_tstate = lexer(lexeme);
         int tstate = lexer(lexeme);
         global_index = i;
-        // TODO
+        // // // // // // // //
         if (token == "identifier") {
             A();
         }
@@ -115,9 +115,13 @@ void output(vector<string> tList) {
     map<string, values> tempMap = st.getTable();
     map<string, values>::iterator itr;
     for (itr = tempMap.begin(); itr != tempMap.end(); itr++) {
+        if (itr->first == "identifier") {
+            continue;
+        } else {
                 outfile << "Key: " << itr->first << endl;
                 outfile << "Address: " << itr->second.address << endl;
                 outfile << "Type: " << itr->second.type << endl;
+        }
     }
 	outfile.close();
 }
