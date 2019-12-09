@@ -25,11 +25,13 @@ const vector<string> SEPARATOR_LIST = { "'", "(", ")", "[", "]", "{", "}", ",", 
 const vector<string> OPERATOR_LIST = { "*", "+", "-", "==", "/=", ">", "<", "=>", "<=", "="};
 syntacticalAnalyzer sa;
 symboltable st;
-int instr_address = 0;
+int instr_address = 1;
 map<int, inst> instr_table;
 string temp;
 string global_token;
 string global_tstate;
+string global_lexeme;
+int global_index;
 
 // function protype
 void A();
@@ -48,9 +50,11 @@ bool fsmReal(string);
 void output(vector<string>);
 int lexer(string);
 
+vector<string> parsedList;
+
 int main() {
 	// will contain the parsed tokens once file is read
-	vector<string> parsedList;
+	// vector<string> parsedList;
 	string fileName;
 
 	cout << "Enter the file name: ";
@@ -77,8 +81,10 @@ void output(vector<string> tList) {
 		string lexeme = tList[i];
 		string token = STATE_NAMES[lexer(lexeme)];
         global_token = token;
+        global_lexeme = lexeme;
         global_tstate = lexer(lexeme);
         int tstate = lexer(lexeme);
+        global_index = i;
         // TODO
         if (token == "identifier") {
             A();
@@ -280,17 +286,27 @@ string readFile(string filename) {
 
 void A() {
     if (global_token == "identifier") {
-        temp = global_token;
-        string next_token = STATE_NAMES[lexer(temp)];
-        // this won't get the proper next token?
-        if (next_token == "=") {
-            string next_token = STATE_NAMES[lexer(global_token)];
+        // same = token;
+        temp = global_lexeme;
+        // lexer();
+        string next_lex = parsedList[global_index+1];
+        global_index++;
+        global_lexeme = next_lex;
+        global_token = STATE_NAMES[lexer(next_lex)];
+        if (global_lexeme == "=") {
+            // lexer();
+            next_lex = parsedList[global_index+1];
+            global_index++;
+            global_lexeme = next_lex;
+            global_token = STATE_NAMES[lexer(next_lex)];
             E();
+            // cout << "CHECKPOINT\n";
             gen_instr("POPM", st.getaddr(temp));
-        } else {
-            cout << "ERROR: = expected" << endl;
-    }
-  } else {cout << "ERROR: id expected" << endl;}
+         } // else {
+    //         cout << "A - ERROR: = expected" << endl;
+    // }
+  //} else {cout << "A - ERROR: id expected" << endl;
+  }
 };
 
 void E() {
@@ -299,9 +315,12 @@ void E() {
 };
 
 void E_prime() {
-    if (global_token == "+") {
-        string next_token = STATE_NAMES[lexer(global_token)];
-        // same thing here?
+    if (global_lexeme == "+") {
+        // lexer();
+        string next_lex = parsedList[global_index+1];
+        global_lexeme = next_lex;
+        global_index++;
+        global_token = STATE_NAMES[lexer(next_lex)];
         T();
         gen_instr("ADD", NULL);
         E_prime();
@@ -314,23 +333,30 @@ void T() {
 };
 
 void T_prime() {
-    if (global_token == "*") {
-        string next_token = STATE_NAMES[lexer(temp)];
-        // here too
+    if (global_lexeme == "*") {
+        // lexer();
+        string next_lex = parsedList[global_index+1];
+        global_index++;
+        global_lexeme = next_lex;
+        global_token = STATE_NAMES[lexer(next_lex)];
         F();
+        // cout << "T_Prime\n";
         gen_instr("MUL", NULL);
         T_prime();
     }
 };
 
 void F() {
-    if (lexer(global_token) == 1) {
+    if (global_token == "identifier") {
+        // lexer();
         gen_instr("PUSHM", st.getaddr(global_token));
-        global_token = STATE_NAMES[lexer(global_token)];
-        // also same thing here
-    } else {
-        cout << "ERROR: id expected" << endl;
-    }
+        string next_lex = parsedList[global_index+1];
+        global_lexeme = next_lex;
+        global_index++;
+        global_token = STATE_NAMES[lexer(next_lex)];
+    } // else {
+    //     cout << "F - ERROR: id expected" << endl;
+    // }
 };
 
 void gen_instr(string op, int oprnd) {
