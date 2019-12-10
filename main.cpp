@@ -32,6 +32,7 @@ string global_token;
 string global_tstate;
 string global_lexeme;
 int global_index;
+string ins_output[1000] = {""};
 
 // function protype
 void A();
@@ -65,6 +66,13 @@ int main() {
 	parsedList = parse(inputfile);
 	
 	output(parsedList);
+
+    // outputs generated assembly instructions
+    for (int i = 0; i < 1000; i++) {
+        if (ins_output[i] != "") {
+            cout << ins_output[i] << endl;
+        }
+    }
     cout << "Completed program - check output.txt.\n";
 	return 0;
 }
@@ -121,6 +129,13 @@ void output(vector<string> tList) {
                 outfile << "Key: " << itr->first << endl;
                 outfile << "Address: " << itr->second.address << endl;
                 outfile << "Type: " << itr->second.type << endl;
+        }
+    }
+
+    outfile << "\nASSEMBLY INSTRUCTIONS" << endl;
+    for (int i = 0; i < 1000; i++) {
+        if (ins_output[i] != "") {
+            outfile << ins_output[i] << endl;
         }
     }
 	outfile.close();
@@ -302,11 +317,12 @@ string readFile(string filename) {
 
 }
 
+// Assignment 3 Functions (given to us by the professor)
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 void A() {
     if (global_token == "identifier") {
-        // same = token;
+        // save = token;
         temp = global_lexeme;
         // lexer();
         string next_lex = parsedList[global_index+1];
@@ -319,13 +335,11 @@ void A() {
             global_index++;
             global_lexeme = next_lex;
             global_token = STATE_NAMES[lexer(next_lex)];
+            // next function call
             E();
-            // cout << "CHECKPOINT\n";
+            ins_output[global_index] = "POPM " + to_string(st.getaddr(temp));
             gen_instr("POPM", st.getaddr(temp));
-         } // else {
-    //         cout << "A - ERROR: = expected" << endl;
-    // }
-  //} else {cout << "A - ERROR: id expected" << endl;
+         }
   }
 };
 
@@ -342,6 +356,7 @@ void E_prime() {
         global_index++;
         global_token = STATE_NAMES[lexer(next_lex)];
         T();
+        ins_output[global_index] = "ADD";
         gen_instr("ADD", 0);
         E_prime();
   }
@@ -360,7 +375,7 @@ void T_prime() {
         global_lexeme = next_lex;
         global_token = STATE_NAMES[lexer(next_lex)];
         F();
-        // cout << "T_Prime\n";
+        ins_output[global_index] = "MUL";
         gen_instr("MUL", 0);
         T_prime();
     }
@@ -370,13 +385,12 @@ void F() {
     if (global_token == "identifier") {
         // lexer();
         gen_instr("PUSHM", st.getaddr(global_token));
+        ins_output[global_index] = "PUSHM " + to_string(st.getaddr(global_token));
         string next_lex = parsedList[global_index+1];
         global_lexeme = next_lex;
         global_index++;
         global_token = STATE_NAMES[lexer(next_lex)];
-    } // else {
-    //     cout << "F - ERROR: id expected" << endl;
-    // }
+    }
 };
 
 void gen_instr(string op, int oprnd) {
