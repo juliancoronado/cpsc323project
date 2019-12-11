@@ -5,12 +5,17 @@
 2. Megan Peters
 3. Anthony Serrato
 
-### How to run code
+### How to run this program
 
 With the latest version of g++ installed in Linux, run the following:
 
 $ sh run.sh
 
+or use
+
+$ ./run
+
 run.sh contains all the commands needed to run the program
 
-run.out is the executable file
+run is the executable file
+

@@ -11,38 +11,47 @@
 
 using namespace std;
 
+// global constant vectors
+const vector<string> STATE_NAMES = { "keyword", "identifier", "separator", "operator", "real", "integer", "Error state" };
+const vector<string> KEYWORD_LIST = { "int", "float", "boolean", "if", "else", "then","get", "put", "while", "for", "return", "fi"};
+const vector<string> SEPARATOR_LIST = { "'", "(", ")", "[", "]", "{", "}", ",", ".", ":", ";", "!" };
+const vector<string> OPERATOR_LIST = { "*", "+", "-", "==", "/=", ">", "<", "=>", "<=", "="};
+// - - - - - - - - - - - -
+
 // struct for intruction table
 struct inst {
     int address;
     string op;
     int oprnd;
 };
+// - - - - - - - - - - - - - -
 
-// global constants
-const vector<string> STATE_NAMES = { "keyword", "identifier", "separator", "operator", "real", "integer", "Error state" };
-const vector<string> KEYWORD_LIST = { "int", "float", "boolean", "if", "else", "then","get", "put", "while", "for", "return", "fi"};
-const vector<string> SEPARATOR_LIST = { "'", "(", ")", "[", "]", "{", "}", ",", ".", ":", ";", "!" };
-const vector<string> OPERATOR_LIST = { "*", "+", "-", "==", "/=", ">", "<", "=>", "<=", "="};
-syntacticalAnalyzer sa;
+// initialzing variables for later
+syntaxanalyzer sa;
 symboltable st;
+//
 int instr_address = 1;
-map<int, inst> instr_table;
+int global_index;
+//
 string temp;
 string global_token;
 string global_tstate;
 string global_lexeme;
-int global_index;
 string ins_output[1000] = {""};
+//
+map<int, inst> instr_table;
+vector<string> parsedList;
+// - - - - - - - - - - - - - - -
 
-// function protype
+// function protypes
 void A();
 void E();
 void T();
 void E_prime();
 void T_prime();
 void F();
+//
 void gen_instr(string, int);
-void displayTable();
 vector<string> parse(string);
 string readFile(string);
 bool fsmIdentifier(string);
@@ -50,14 +59,13 @@ bool fsmInteger(string);
 bool fsmReal(string);
 void output(vector<string>);
 int lexer(string);
+// - - - - - - - - - - - - - - -
 
-vector<string> parsedList;
-
+// main function that runs the program
 int main() {
-	// will contain the parsed tokens once file is read
-	// vector<string> parsedList;
 	string fileName;
-
+    // prompts user for file name
+    // default file name is "input"
 	cout << "Enter the file name (input is our sample): ";
 	cin >> fileName;
 	string inputfile = readFile(fileName);
@@ -65,18 +73,24 @@ int main() {
 	// calls parse function on text to separate it into individual items
 	parsedList = parse(inputfile);
 	
+    // calls output function
 	output(parsedList);
 
-    // outputs generated assembly instructions
+    cout << "Generated Assembly Instructions: \n";
+
+    // prints out generated assembly instructions
     for (int i = 0; i < 1000; i++) {
         if (ins_output[i] != "") {
             cout << ins_output[i] << endl;
         }
     }
+    // program has completed - success message.
     cout << "Completed program - check output.txt.\n";
 	return 0;
 }
 
+// output fuction parses the token list and writes
+// the output to output.txt
 void output(vector<string> tList) {
 	ofstream outfile;
 	stringstream ss;
@@ -86,6 +100,7 @@ void output(vector<string> tList) {
 	ss << "-----------------------------------------\n";
 
 	for (int i = 0; i < tList.size(); i++) {
+        // adds lexems and tokens to global variables to help with assembly code generation
 		string lexeme = tList[i];
 		string token = STATE_NAMES[lexer(lexeme)];
         global_token = token;
@@ -98,8 +113,9 @@ void output(vector<string> tList) {
             A();
         }
 		ss << "Token: " << token << setw(24) << "Lexeme: " << lexeme << '\n';
-		//pass token and lexeme to syntactical analyzer
+		// pass token and lexeme to syntactical analyzer
 		ss << sa.parse(token, lexeme);
+        // if the lexeme exists in the symbol table, don't add it again
 		if (token == "identifier" && !st.exists(lexeme)) {
 			st.add(lexeme);
 		}
@@ -132,16 +148,18 @@ void output(vector<string> tList) {
         }
     }
 
+    // adds assembly instructions to the output file
     outfile << "\nASSEMBLY INSTRUCTIONS" << endl;
     for (int i = 0; i < 1000; i++) {
         if (ins_output[i] != "") {
             outfile << ins_output[i] << endl;
         }
     }
+    // closes stream to output file
 	outfile.close();
 }
 
-//fsm to check for identifier
+// finite state machine that checks for identifiers
 bool fsmIdentifier(string value){
 	if(isalpha(value.at(0))){
 		for(int i=0; i<value.length(); i++){
@@ -154,7 +172,7 @@ bool fsmIdentifier(string value){
 	}
 }
 
-//fsm to check for integer
+// finite state machine that checks for integers
 bool fsmInteger(string value){
 	for(int i=0; i<value.length(); i++){
 		if(!isdigit(value.at(i))){
@@ -165,7 +183,7 @@ bool fsmInteger(string value){
 	return true;
 }
 
-//fsm to check for real
+// finite state machine that checks for reals
 bool fsmReal(string value){
 	bool period = false;
 	int pcount = 0;
@@ -188,7 +206,7 @@ bool fsmReal(string value){
 	}
 }
 
-//lexer function
+// lexer function - determines the current state of the FSM based on the token given
 int lexer(string token){
 	//initialize to error state
 	int token_state = 6;
@@ -208,7 +226,8 @@ int lexer(string token){
 	return token_state;
 }
 
-// parse function
+// parse function - separates each token from the long string of tokens
+// then adds them to the parseList vector
 vector<string> parse(string s) {
 
 	vector<string> parseList;
@@ -290,7 +309,7 @@ vector<string> parse(string s) {
 	return parseList;
 }
 
-// read input from file function
+// readFile function - reads text from the given input file
 string readFile(string filename) {
 	string text, temp;
 	ifstream infile(filename);
@@ -393,18 +412,10 @@ void F() {
     }
 };
 
+// gen_instr function - generates the instruction based on the operation and operand that's passed in
 void gen_instr(string op, int oprnd) {
     instr_table[instr_address].address = instr_address;
     instr_table[instr_address].op = op;
     instr_table[instr_address].oprnd = oprnd;
     instr_address++;
 };
-
-void displayTable() {
-    map<int, inst>::iterator it;
-    for (it = instr_table.begin(); it != instr_table.end(); it++) {
-        cout << "Address: " << it->second.address << endl;
-        cout << "Op: " << it->second.op << endl;
-        cout << "Operand: " << it->second.oprnd << endl;
-    }
-}

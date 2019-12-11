@@ -3,28 +3,16 @@
 #include <vector>
 using namespace std;
 
-class syntacticalAnalyzer{
+class syntaxanalyzer {
 public:
 	// contains all the states listed in the syntax rules (assignment 1)
 	enum State {Null, Statement, Assign, Expression, Factor, Term, Term_Prime, Expression_Prime, Opt_Declaration_List, Declaration, Declaration_List,
 		Scan, IDs, Print, While, Condition, Relop, Empty, If, Return, Statement_List, Compound, Qualifier,
 		Body, Parameter, Parameter_List, Opt_Parameter_List, Function, Function_Definitions, Opt_Function_Definitions, Rat19F};
-	//track current state of parser
+	// tracks current state of parser
 	stack <string> cstate;
-	//track of all tokens that have been passed to syntax analyzer
+	// tracks of all tokens that have been passed to syntax analyzer
 	stack <string> tokenstack;
-
-	//for debugging
-	void showstack() { 
-	    while (!tokenstack.empty()) { 
-	        cout << tokenstack.top() << endl; 
-	        tokenstack.pop(); 
-	    }
-	}
-
-	string curr_state() {
-		return cstate.top();
-	}
 
 	void printcstates() {
 		cout << "Length of cstates: " << cstate.size() << endl;
@@ -36,11 +24,12 @@ public:
 	}
 
 	//default constructor set to Statement
-	syntacticalAnalyzer() {
+	syntaxanalyzer() {
 		cstate.push(enumVect[Statement]);
 		tokenstack.push("null");
 	}
 
+    // begins to parse the procedure and declars which state its in
 	string parse(string token, string lexeme){
 		string s;
 
@@ -89,11 +78,15 @@ public:
 		}
 	}
 
+    // array with strings for each enum State
 	string enumVect[31] = {"Null", "Statement", "Assign", "Expression", "Factor", "Term", "Term_Prime", "Expression_Prime", "Opt_Declaration_List", "Declaration", "Declaration_List",
 		"Scan", "IDs", "Print", "While", "Condition", "Relop", "Empty", "If", "Return", "Statement_List", "Compound", "Qualifier",
 		"Body", "Parameter", "Parameter_List", "Opt_Parameter_List", "Function", "Function_Definitions", "Opt_Function_Definitions", "Rat19F"};
 
 private:
+
+    // Production Rules are contained as private functions of this class
+
 	// Rule 1 *Julian*
 	// Rat19F
 	// <Rat19F> -> <Opt Function Definitions> %% <Opt Declaration List> <Statement List> %%
@@ -117,9 +110,11 @@ private:
 		string s;
 		s += "<Opt Function Definitions> ->";
 		if (!lexeme.empty()) {
-			s += r3(token, lexeme); // function definitions (r3)
+            // Rule 3
+			s += r3(token, lexeme);
 		} else {
-			s += r29(token, lexeme); // empty 
+            // Empty
+			s += r29(token, lexeme);
 		}
 		return s;
 	}
@@ -132,7 +127,7 @@ private:
 		string s;
 		s += "<Function Definitions>";
 		s += "-> ";
-		s += r4(token, lexeme); // todo (the or part)
+		s += r4(token, lexeme); // todo (the OR part)
 		return s;
 	}
 
@@ -160,7 +155,8 @@ private:
 		if (!lexeme.empty()) {
 			s += r6(token, lexeme);
 		} else {
-			s += r29(token, lexeme); // empty 
+            // Empty
+			s += r29(token, lexeme);
 		}
 		return s;
 	}
@@ -173,7 +169,7 @@ private:
 		string s;
 		s += "<Parameter List>";
 		s += "->";
-		s += r7(token, lexeme); // todo (the or part)
+		s += r7(token, lexeme); // todo (the OR part)
 		return s;
 	}
 
@@ -246,7 +242,7 @@ private:
 		if (token == "identifier") {
 			s += r12(token, lexeme);
 		} else {
-			s += "\t"; // todo (the or part)
+			s += "\t"; // todo (the OR part)
 		}
 		return s;
 	}
@@ -296,7 +292,7 @@ private:
 		string s;
 		s += "<Statement List>";
 		s += "->";
-		s += r15(token, lexeme); // todo (the or part)
+		s += r15(token, lexeme); // todo (the OR part)
 		return s;
 	}
 
@@ -304,7 +300,6 @@ private:
 	// Statement
 	// <Statement> -> <Compound> | <Assign> | <If> | <Return> | <Print> | <Scan> | <While>
 	string r15(string token, string lexeme){
-		//cstate.push(enumVect[Statement]);
 		string s;
 		s += "\t<Statement>";
 		// compound
@@ -322,9 +317,10 @@ private:
 			// Rule 19 (return)
 			s += r19(token, lexeme);
 		} else if (token == "keyword" && lexeme == "print") {
-			// to do
+			// Print
 			s += r20(token, lexeme);
 		} else if (token == "keyword" && lexeme == "while") {
+            // While
 			s += r22(token, lexeme);
 		} else {
 			s += "\n";
@@ -378,8 +374,6 @@ private:
 	string r18(string token, string lexeme){
 		cstate.push(enumVect[If]);
 		string s;
-		// TODO needs some sort of check here bc idk how to check
-		// for which one to add to s
 		if (token == "keyword" && lexeme =="if") {
 			s += "if (" + r23(token, lexeme) + ") " + r15(token, lexeme) + " fi";
 		} else {
@@ -396,9 +390,6 @@ private:
 		cstate.push(enumVect[Return]);
 		string s;
 		s += "<Return>-> ";
-		// idk if this is right, but it checks if the return string
-		// has more chars than just "return;" indicating that an expression
-		// follows the return statement, or could we just put <Expression>?
 		if (lexeme.size() > 7) {
 			s += "return" + r25(token, lexeme) + ";";
 		} else {
@@ -473,7 +464,6 @@ private:
 	string r24(string token, string lexeme){
 		cstate.push(enumVect[Relop]);
 		string s;
-		// ----- maybe these can all be return statements??? ------
 		if (lexeme == "==") {
 			s += "==";
 		} else if (lexeme == "/=") {
@@ -487,11 +477,10 @@ private:
 		} else if (lexeme == "<=") {
 			s += "<=";
 		} else {
-			// idk what goes in the else part
+			//
 		}
 		return s;
 	}
-
 
 	// Rule 25
 	// Expression
@@ -510,7 +499,6 @@ private:
 			s+= r25P(token,lexeme);
 			return s;
 		}
-		
 	}
 
 	// Rule 25.2 (stops left recursion)

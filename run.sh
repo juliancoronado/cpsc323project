@@ -1,5 +1,5 @@
-rm *.out
+rm run
 
-g++ main.cpp -o run.out
+g++ main.cpp -o run
 
-./run.out
+./run
